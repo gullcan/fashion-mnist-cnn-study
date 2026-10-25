@@ -18,8 +18,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 1693,
-      "sha256": "83d2084c70fd39697a80d889b595ffbdca64df22fdaedadf9c302f3f27d12dab"
+      "bytes": 1841,
+      "sha256": "2ac212a8b74aed6862d35afa1a3f792520df85e3d6988a4e7b2d8669b20420a3"
     },
     {
       "path": "LICENSE",
@@ -28,8 +28,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 6033,
-      "sha256": "576e93f0bfa27cb011d2061e794c1754e2a25066c0e60d4b01c11452ecab9e54"
+      "bytes": 6365,
+      "sha256": "589d4af44a16e685f05416aa54977e91745cedf93417bf1b506b1a4ea8b4e551"
     },
     {
       "path": "THIRD_PARTY_NOTICES.md",

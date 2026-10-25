@@ -4,6 +4,8 @@
 
 A small, LeNet-inspired study of how image classification works: pixels, learned filters, training, evaluation and mistakes. A linear baseline and two compact CNNs share a recorded 54,000/6,000 training/validation split.
 
+**[Read the article (Turkish): Bir Bilgisayara Tişörtü Nasıl Anlatırsın?](https://medium.com/@dgulcan88/bir-bilgisayara-ti%C5%9F%C3%B6rt%C3%BC-nas%C4%B1l-anlat%C4%B1rs%C4%B1n-86493b8b5d4e)** — a beginner-friendly explanation of representation, learned filters, loss, generalization and the experiments behind this project.
+
 **Selected CNN: 91.08% test accuracy, 0.9101 macro-F1, 57,190 parameters.** The official test set was reused after V1; this is not a new blind evaluation. This is an adaptation of LeNet ideas, not an exact LeNet-5 reproduction.
 
 **[Try the live demo](https://gulcan-cnn-kiyafet-laboratuvari.primegull512.chatgpt.site)** — upload a photo or select a dataset example. The exported CNN runs in your browser and displays its actual 28×28 input, class scores and feature maps. Arbitrary-photo accuracy has not been measured.
