@@ -17,9 +17,6 @@ dependencies = [
     "pillow==12.3.0",
 ]
 
-[project.optional-dependencies]
-notebook = ["jupyterlab"]
-
 [project.scripts]
 fashion-cnn = "fashion_cnn.cli:main"
 

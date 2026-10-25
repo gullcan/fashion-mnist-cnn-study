@@ -48,7 +48,7 @@ python -m fashion_cnn train --epochs 30 --seed 42 --output runs/training-01
 python -m fashion_cnn predict --index 49804 --checkpoint runs/training-01/best.pt
 ```
 
-Training starts from new weights using the selected V2 recipe, fixed split, batch64, Adam0.001 and crop/flip augmentation on training data only. Validation selects maximum accuracy, then lower loss. Histories, config, selected weights and curves are saved together. CUDA is used when available. This single run does not repeat the five-candidate search or change the published model.
+Training starts from new weights using the selected V2 recipe, fixed split, batch64, Adam (learning rate 0.001) and crop/flip augmentation on training data only. Validation selects maximum accuracy, then lower loss. Histories, config, selected weights and curves are saved together. CUDA is used when available. This single run does not repeat the five-candidate search or change the published model.
 
 ## Inspect the recorded model
 
@@ -73,7 +73,7 @@ python -m fashion_cnn reproduce --output runs/reproduction-01
 
 This performs nine training runs totaling 230 epochs: two V1 runs ×10, five V2 candidates ×30, and two additional V2 seeds ×30. It copies downloaded data and the fixed split into the new workspace, then runs V1 analysis, V2 search, stability, frozen evaluation and explanation. It explicitly reuses the official test benchmark as in the original study. The source `results/` is preserved. The destination must not exist and must be outside the source data directory. This is a full campaign, not a quick installation check.
 
-## Tests, notebook and browser
+## Tests and browser
 
 ```powershell
 python -m unittest discover -s tests -v
@@ -82,19 +82,12 @@ node web/tests/test-runtime.mjs
 node web/tests/test-preprocess.mjs
 ```
 
-The tests do not download data, rerun the full training campaign or evaluate the official test set. Node22 is used by CI; no npm dependencies are needed. Optional notebook tooling:
-
-```powershell
-python -m pip install -e ".[notebook]"
-python -m jupyter lab cnn_project.ipynb
-```
-
-The notebook is a reading guide using toy calculations and stored evidence. Its cells do not automatically train or open the official test set. See [web source and local preview](../web/README.md) for the static demo.
+The tests do not download data, rerun the full training campaign or evaluate the official test set. Node 22 is used by CI; no npm dependencies are needed. See [browser source and local preview](../web/README.md) for the static demo.
 
 ## Reproducibility boundaries
 
 `verify` checks SHA256 and byte size for the tracked snapshot listed in `artifact_manifest.json`, excluding the manifest itself. It checks source and recorded artifacts, not ignored local data or future runs. Original report bytes are preserved. When deliberately editing source, regenerate the manifest for a new reviewed snapshot; do not replace original results with invented values.
 
-Deterministic settings and fixed seeds reduce variation within the measured setup. Hardware, libraries and floating-point execution can still change outputs. The refactor was checked on saved weights and a complete validation pass; the full 230-epoch campaign was not repeated. See [verification](VERIFICATION.md) for the exact scope.
+Deterministic settings and fixed seeds reduce variation within the measured setup. Hardware, libraries and floating-point execution can still change outputs. Checks include saved-checkpoint compatibility, independent browser references and a complete 6,000-image validation pass (91.23% accuracy, 0.9117 macro-F1). The full 230-epoch campaign was not rerun during source maintenance.
 
 For maintainers: review the source diff and confirm that original evidence has not changed, stage intended files, run `python scripts/update_manifest.py`, then stage the manifest. This records the working files selected by Git; it does not authenticate the scientific claims or replace review.

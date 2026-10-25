@@ -2,17 +2,13 @@
 
 [![Checks](https://github.com/gullcan/fashion-mnist-cnn-study/actions/workflows/checks.yml/badge.svg)](https://github.com/gullcan/fashion-mnist-cnn-study/actions/workflows/checks.yml)
 
-A small, LeNet-inspired study of how image classification works: pixels, learned filters, training, evaluation and mistakes. A linear baseline and two compact CNNs share a recorded 54,000/6,000 training/validation split.
+A compact image-classification study comparing a linear baseline and two CNNs, with reproducible training, validation-based model selection and paired error analysis.
 
-**[Read the article (Turkish): Bir Bilgisayara Tişörtü Nasıl Anlatırsın?](https://medium.com/@dgulcan88/bir-bilgisayara-ti%C5%9F%C3%B6rt%C3%BC-nas%C4%B1l-anlat%C4%B1rs%C4%B1n-86493b8b5d4e)** — a beginner-friendly explanation of representation, learned filters, loss, generalization and the experiments behind this project.
-
-**Selected CNN: 91.08% test accuracy, 0.9101 macro-F1, 57,190 parameters.** The official test set was reused after V1; this is not a new blind evaluation. This is an adaptation of LeNet ideas, not an exact LeNet-5 reproduction.
-
-**[Try the live demo](https://gulcan-cnn-kiyafet-laboratuvari.primegull512.chatgpt.site)** — upload a photo or select a dataset example. The exported CNN runs in your browser and displays its actual 28×28 input, class scores and feature maps. Arbitrary-photo accuracy has not been measured.
-
-![Convolution, ReLU and pooling on validation images](results/explanation_v2/activation_flow.png)
+**[Live demo](https://gulcan-cnn-kiyafet-laboratuvari.primegull512.chatgpt.site)** · **[Article (Turkish)](https://medium.com/@dgulcan88/bir-bilgisayara-ti%C5%9F%C3%B6rt%C3%BC-nas%C4%B1l-anlat%C4%B1rs%C4%B1n-86493b8b5d4e)**
 
 ## Results
+
+All models use the same stratified 54,000/6,000 training/validation split. The official test set contains 10,000 images.
 
 | Model | Parameters | Epoch budget | Validation accuracy | Test accuracy | Test macro-F1 |
 |---|---:|---:|---:|---:|---:|
@@ -20,13 +16,17 @@ A small, LeNet-inspired study of how image classification works: pixels, learned
 | V1 CNN | 25,010 | 10 | 88.67% | 88.12% | 0.8807 |
 | Selected V2 CNN, seed42 | 57,190 | 30 | 91.23% | **91.08%** | **0.9101** |
 
-V2 made 892 test errors, 296 fewer than V1. Paired predictions include 562 corrected and 266 newly incorrect examples. The model still struggles with similar garment categories. Different training budgets and parameter counts prevent attributing the entire gain to one architectural change.
+The selected model uses 16/32 convolution channels, average pooling, Adam (learning rate 0.001), batch size 64 and training-only random crop/horizontal flip. Five bounded validation experiments compared longer training, a scheduler, max pooling, wider layers and augmentation.
 
-Settings were selected through five bounded validation experiments. The final recipe uses 16/32 channels, **average pooling**, Adam (0.001), batch size 64 and training-only crop/flip augmentation. Across seeds 42/43/44, validation accuracy averaged **90.27% ± 0.844 percentage points** (sample standard deviation, one fixed split). Seed42 was used for selection; this is a descriptive check, not an unbiased estimate.
+V2 made 892 test errors: 562 V1 errors were corrected and 266 previously correct predictions became incorrect, for a net reduction of 296. Across seeds 42/43/44, validation accuracy averaged 90.27% with a sample standard deviation of 0.844 percentage points on one fixed split. Seed42 was used for configuration selection, so this check is descriptive.
 
-## Start here
+**Evaluation limits:** The official test was reused after V1; it is not a new blind evaluation. Model sizes and training budgets differ. Performance on arbitrary uploaded photographs is unmeasured, and softmax scores are not calibrated correctness probabilities. The architecture is LeNet-inspired, not an exact LeNet-5 reproduction.
 
-Use Python 3.14 to match the measured environment. From the repository root, create and activate a virtual environment, then install a suitable PyTorch build and the project:
+![Convolution, ReLU and pooling on validation images](results/explanation_v2/activation_flow.png)
+
+## Quick start
+
+Run from the repository root. Python 3.14 matches the measured environment; CPU is sufficient for inference.
 
 ```powershell
 py -3.14 -m venv .venv
@@ -38,32 +38,25 @@ python -m fashion_cnn download
 python -m fashion_cnn predict --index 49804
 ```
 
-CPU inference is sufficient. For NVIDIA training, see the [installation and reproduction guide](docs/REPRODUCING.md). Dependencies are defined once in `pyproject.toml`. The installed `fashion-cnn` command is equivalent to `python -m fashion_cnn`.
-
-Train the selected recipe from fresh weights, or check the saved model on validation data:
+Train a fresh model or inspect the fixed selected model:
 
 ```powershell
-python -m fashion_cnn train --epochs 30 --output runs/my-training
-python -m fashion_cnn evaluate --output runs/my-validation
-python -m fashion_cnn explain --output runs/my-explanation
+python -m fashion_cnn train --epochs 30 --output runs/training-01
+python -m fashion_cnn evaluate --output runs/validation-01
+python -m fashion_cnn explain --output runs/explanation-01
 ```
 
-Output directories must be new. New runs do not replace the evidence in `results/`. Evaluation uses validation data by default; accessing the official test requires an explicit `--test`. The full historical campaign is a separate 230-epoch operation described in the reproduction guide.
+Output directories must be new. Evaluation uses validation data by default; the official test requires explicit `--test`. See [installation and reproduction](docs/REPRODUCING.md) for NVIDIA setup and the full study.
 
-## Structure
+## Implementation
 
-```text
-fashion_cnn/       model, data, training, metrics, inference and command interface
-  experiments/    original study protocols and report orchestration
-lessons/          preserved, runnable learning exercises
-tests/            core contracts and regression checks
-web/              browser demo source, exported weights and independent checks
-results/          original measured evidence and selected checkpoints
-docs/             architecture, model card and explanations
-cnn_project.ipynb  executable reading guide; no automatic training/test evaluation
-```
+- `fashion_cnn/`: shared model, data, training, inference and classification metrics.
+- `fashion_cnn/experiments/`: V1/V2 experiment, selection and evaluation protocols.
+- `tests/`: numerical and workflow regression tests.
+- `web/`: static browser demo, exported weights and independent runtime checks.
+- `results/`: recorded configurations, histories, checkpoints, predictions and figures.
 
-The model is defined once. Prediction imports neither experiment orchestration nor plotting. [Read the code map](docs/CODE_MAP.md) for the dependency direction and implementation locations.
+The model factory is shared by training, inference and browser export. Prediction does not import training workflows or plotting. See the [architecture map](docs/CODE_MAP.md), [model card](docs/MODEL_CARD.md) and [browser implementation](web/README.md).
 
 ## Checks
 
@@ -74,22 +67,11 @@ node web/tests/test-runtime.mjs
 node web/tests/test-preprocess.mjs
 ```
 
-Python tests cover split integrity, metrics, gradient/update boundaries, final short batches and checkpoint compatibility. Browser checks compare 100 fixed validation inputs with independent PyTorch references and exercise preprocessing. Matching predictions across implementations is not 100% classification accuracy. GitHub Actions runs these checks without downloading the dataset or training the full study. See [verification scope](docs/VERIFICATION.md).
-
-## Read further
-
-- [Turkish engineering guide and glossary](docs/ENGINEERING_NOTES_TR.md)
-- [Model card: architecture, experiments and limitations](docs/MODEL_CARD.md)
-- [Reproduce the study](docs/REPRODUCING.md)
-- [Browser demo: source, preprocessing and limitations](docs/WEB_DEMO_TR.md)
-- [Walkthrough notebook](cnn_project.ipynb)
-
-Measured environment: Windows 11 Pro, Ryzen 5 5600, 16 GB RAM, RTX 4060 8 GB; Python 3.14.7, PyTorch 2.14.1+cu130 and torchvision 0.29.1+cu130. Seeds do not guarantee identical results across hardware or builds. Feature maps show responses, not causal explanations. Softmax scores are not calibrated correctness probabilities.
+The 22 Python tests cover split integrity, hand-calculated metrics, sample-weighted loss, parameter-update boundaries, checkpoint compatibility and isolated reproduction. Browser tests compare 100 fixed validation inputs against independent PyTorch references within absolute tolerance 1e-4, and check preprocessing/preview consistency. Runtime parity does not imply 100% classification accuracy. CI runs these checks without downloading the dataset or rerunning the training campaign.
 
 ## References and license
 
 - [LeCun et al. (1998), Gradient-Based Learning Applied to Document Recognition](https://bottou.org/papers/lecun-98h)
 - [Xiao et al. (2017), Fashion-MNIST](https://arxiv.org/abs/1708.07747)
-- [Fashion-MNIST official repository](https://github.com/zalandoresearch/fashion-mnist)
 
-Project code is [MIT licensed](LICENSE). Dataset-derived figures/examples are attributed in [third-party notices](THIRD_PARTY_NOTICES.md), including the upstream MIT notice. Raw data are downloaded through torchvision and excluded from Git.
+Code is [MIT licensed](LICENSE). Dataset-derived images and examples are attributed in [third-party notices](THIRD_PARTY_NOTICES.md). Raw data, virtual environments and new run outputs are excluded from Git.

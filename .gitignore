@@ -16,3 +16,17 @@ Thumbs.db
 build/
 /dist/
 
+# Personal study material is kept outside the public project.
+/private/
+/.private/
+/notes/
+/lessons/
+/cnn_project.ipynb
+/docs/ENGINEERING_NOTES_TR.md
+/docs/PUBLISHING_TR.md
+/docs/WEB_DEMO_TR.md
+/docs/VERIFICATION.md
+/CHANGELOG.md
+/results/baseline_epoch1.pt
+/results/initial_filters.npy
+/results/initial_filters.png

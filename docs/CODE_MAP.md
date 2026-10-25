@@ -5,7 +5,6 @@ The reusable package has a small number of plain functions. There is no service 
 ```text
 CLI -> experiments -> models / data / engine / metrics / plotting / artifacts
 CLI -> inference   -> models / data / artifacts
-lessons            -> reusable package (never the reverse)
 web export         -> shared Python model -> static browser forward pass
 ```
 
@@ -26,7 +25,6 @@ web export         -> shared Python model -> static browser forward pass
 | Original V1 classification report | `fashion_cnn/analysis.py` |
 | Full isolated rerun | `fashion_cnn/experiments/reproduction.py` |
 | Numerical and workflow regression checks | `tests/test_core.py` |
-| Historical learning exercises | `lessons/` |
 | Genuine JavaScript inference and image preparation | `web/dist/inference.mjs`, `preprocess.mjs` |
 
 ## Data and model contracts
@@ -43,5 +41,3 @@ web export         -> shared Python model -> static browser forward pass
 `results/` is the original study evidence: `experiment`, `analysis`, `improvement_v2`, `stability_v2`, `evaluation_v2`, `explanation_v2`. These contain the original configs, histories, checkpoint metadata, predictions and reports. Old absolute paths inside provenance JSON describe the original runs; workflows resolve files relative to the supplied project root.
 
 New CLI work goes to fresh `runs/` directories. Full reproduction creates a separate workspace and copies data and the split before running the six study stages. It explicitly repeats the already-used official test benchmark.
-
-Learning exercises are under `lessons/`, guarded by `main()` and write only to `runs/lessons/`. They document development, while the package provides the current shared implementation. Earlier source layout remains available in Git history; no historical commits or metrics were fabricated during the refactor.
