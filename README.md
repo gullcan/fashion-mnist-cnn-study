@@ -4,6 +4,17 @@ A small, LeNet-inspired image classification study built to understand convoluti
 
 **Selected V2 checkpoint: 91.08% test accuracy and 0.9101 macro-F1, using 57,190 parameters.** The official test set was reused after V1; this is not a new blind evaluation. V2 settings were selected using seed42 validation results. Across seeds 42/43/44, validation accuracy averaged **90.27%**, with a sample standard deviation of **0.844 percentage points** on one fixed split.
 
+**[Open the live clothing-image demo](https://gulcan-cnn-kiyafet-laboratuvari.primegull512.chatgpt.site)** — upload a PNG/JPEG/WebP or select a dataset example. The actual exported CNN runs in the browser and shows the prepared28×28 input, top-three scores and intermediate feature maps. Photos are processed locally. Accuracy on arbitrary uploaded photographs has not been measured;91.08% is the recorded Fashion-MNIST benchmark result.
+
+[Browser-demo implementation and validation notes](docs/WEB_DEMO_TR.md)
+
+<details>
+<summary>See the deployed demo</summary>
+
+![Live browser demo](docs/images/web-demo.jpg)
+
+</details>
+
 ![Convolution, ReLU and pooling on three validation images](results/explanation_v2/activation_flow.png)
 
 ## What to read first
@@ -102,7 +113,7 @@ This is a full training rerun, not a quick demo. It requires downloaded data, co
 - The official test was evaluated for V1 and reused for V2. Test results were not used to choose V2 settings, but this is not an unseen independent holdout.
 - Fashion-MNIST consists of small, standardized grayscale catalog images. Performance on arbitrary photographs, backgrounds or unseen categories has not been established.
 - Activation maps show responses to an input; they do not establish the cause of a prediction. V2 initial filters were reconstructed from the same seed, factory and PyTorch version, not captured during training.
-- This is a LeNet-inspired adaptation, **not an exact reproduction of LeNet-5**. No deployment or real user traffic is claimed in this version.
+- This is a LeNet-inspired adaptation, **not an exact reproduction of LeNet-5**. An interactive browser demo is deployed; arbitrary-photo accuracy, production reliability and real-user traffic have not been established.
 
 ## Data, references and license
 

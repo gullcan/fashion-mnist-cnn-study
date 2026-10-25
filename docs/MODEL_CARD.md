@@ -2,9 +2,9 @@
 
 ## Purpose and input contract
 
-An educational classifier for ten Fashion-MNIST clothing/accessory categories. Intended uses are studying CNN mechanisms, reproducing a compact experiment, and demonstrating inference on dataset-style images. Arbitrary photos, unseen categories and safety-critical uses were not evaluated. This version is a local research/learning artifact, not a deployed service.
+An educational classifier for ten Fashion-MNIST clothing/accessory categories. Intended uses are studying CNN mechanisms, reproducing a compact experiment, and demonstrating inference on dataset-style images. A [public browser demo](https://gulcan-cnn-kiyafet-laboratuvari.primegull512.chatgpt.site) runs the exported trained weights. Classification performance on arbitrary photos, unseen categories and safety-critical uses was not evaluated.
 
-Input: batch of grayscale `float32` tensors, shape `[N,1,28,28]`, pixel values in `[0,1]`. Inference uses only `ToTensor()`, without random crop or flip. The training distribution has standardized catalog imagery and background/intensity conventions; simply resizing an arbitrary photograph does not establish compatibility.
+Input: batch of grayscale `float32` tensors, shape `[N,1,28,28]`, pixel values in `[0,1]`. Benchmark inference uses only `ToTensor()`, without random crop or flip. The optional photo demo adds explicit grayscale, background-polarity and centering heuristics before producing the same tensor shape. Those photo transformations were not used to establish the benchmark accuracy. The training distribution has standardized catalog imagery and background/intensity conventions; simply resizing an arbitrary photograph does not establish compatibility.
 
 Output: ten logits in this order: T-shirt/top, Trouser, Pullover, Dress, Coat, Sandal, Shirt, Sneaker, Bag, Ankle boot. `argmax` selects a class. Softmax is used for inspection; its scores were not calibrated.
 
