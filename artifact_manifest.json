@@ -18,8 +18,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "bytes": 636,
-      "sha256": "bd5272f911cd3864d6546d4beea305c6f25ecd1aaa5e29e7466ceccda7f454cd"
+      "bytes": 981,
+      "sha256": "e9495e6bbb9c7223ac8f5f699bc2c79092a5b65473806f436a6b718aca3c3076"
     },
     {
       "path": "check_environment.py",
@@ -58,8 +58,8 @@
     },
     {
       "path": "docs/PUBLISHING_TR.md",
-      "bytes": 3513,
-      "sha256": "5bbd25500d34b6ec462d5841d6d30471c7c314fb7bf6e2ec17acda0345d802d1"
+      "bytes": 4806,
+      "sha256": "53f577352fef47a6b4e5cbca1d15a7abed897e99832af3fe7c2feca2d4148428"
     },
     {
       "path": "docs/REPRODUCING.md",
@@ -68,8 +68,8 @@
     },
     {
       "path": "docs/VERIFICATION.md",
-      "bytes": 2469,
-      "sha256": "0d1b8d4711001bb87968b1d630c31329c4e822bd6aac04930c9b9e366a97125a"
+      "bytes": 2622,
+      "sha256": "888ba0d18f3bc8a0bc3324d46bd62db03096b43dcb1a338cb19e6f69169dfcae"
     },
     {
       "path": "evaluate_v2.py",
