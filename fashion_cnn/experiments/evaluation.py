@@ -1,8 +1,4 @@
-"""Sabit seed42 V2 modelini degerlendir; egitim veya model secimi yapma.
-
-Resmi test V1'de goruldu. Bu degerlendirme ayni benchmark'in tekraridir;
-yeni kor test degildir. V1 raporlari ve model dosyalari korunur.
-"""
+"""Evaluate the fixed V2 artifact; test reuse is disclosed and never used for tuning."""
 
 import csv
 import json
@@ -14,8 +10,9 @@ import torch
 from torchvision.datasets import FashionMNIST
 from torchvision.transforms import ToTensor
 
-from analyze_experiment import analyze_split, file_hash, save_json
-from improve_cnn import build_candidate
+from ..analysis import analyze_split
+from ..artifacts import file_hash, save_json
+from ..models import build_cnn
 
 
 def run_evaluation(project_dir, output_dir, include_test=False):
@@ -46,7 +43,7 @@ def run_evaluation(project_dir, output_dir, include_test=False):
             or saved["candidate_config"] != winner["candidate_config"]
             or saved["run_name"] != winner["run_name"]):
         raise ValueError("Checkpoint ile V2 ozeti uyusmuyor.")
-    model = build_candidate(saved["candidate_config"]).to(device)
+    model = build_cnn(channels=saved["candidate_config"]["channels"], pooling=saved["candidate_config"]["pooling"]).to(device)
     model.load_state_dict(saved["model_state_dict"])
     train_source = FashionMNIST(project_dir / "data", train=True,
                                download=False, transform=ToTensor())
@@ -132,8 +129,3 @@ def run_evaluation(project_dir, output_dir, include_test=False):
     print("Ayni resmi test yeniden kullanildi; yeni kor test degildir.", flush=True)
     print(f"Kayitlar: {output_dir}", flush=True)
     return report
-
-
-if __name__ == "__main__":
-    root = Path(__file__).resolve().parent
-    run_evaluation(root, root / "results" / "evaluation_v2", include_test=True)

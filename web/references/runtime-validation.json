@@ -1,0 +1,17 @@
+{
+  "checkpointSha256": "013745dcd66e4d5c462ba64607faed70831ea7e9caa27721afcdc34693b245f2",
+  "examples": 100,
+  "top1Matches": 100,
+  "absoluteTolerance": 0.0001,
+  "maxProbabilityError": 3.4256074288308014e-7,
+  "maxLogitError": 0.00000476837158203125,
+  "maxActivationError": 0.00000667572021484375,
+  "totalMilliseconds": 146.3796,
+  "meanMilliseconds": 1.463796,
+  "loaderChecks": [
+    "successful mocked fetch",
+    "SHA256 corruption rejected when WebCrypto exists",
+    "HTTP failure rejected"
+  ],
+  "note": "Balanced first-ten validation samples per class; independent PyTorch CPU reference. This verifies runtime parity, not accuracy on arbitrary photos."
+}

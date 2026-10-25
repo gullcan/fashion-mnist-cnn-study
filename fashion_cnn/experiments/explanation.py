@@ -1,8 +1,4 @@
-"""Sabit V2 modeli icin filtre/aktivasyon gorselleri ve eslesmis hata analizi.
-
-Egitim yoktur. Gorsellestirme ornekleri yalnizca dogrulamadan gelir.
-Test tahminleri mevcut CSV'lerden okunur; test dataset'i acilmaz.
-"""
+"""Validation activations and paired errors from already-saved predictions."""
 
 import csv
 import json
@@ -16,8 +12,9 @@ import torch
 from torchvision.datasets import FashionMNIST
 from torchvision.transforms import ToTensor
 
-from analyze_experiment import file_hash, save_json
-from improve_cnn import build_candidate
+from ..artifacts import file_hash, save_json
+from ..models import build_cnn
+from ..plotting import plot_filters, plot_channels
 
 
 def compare_errors(project_dir, output_dir):
@@ -67,42 +64,6 @@ def compare_errors(project_dir, output_dir):
     return {"counts": counts, "input_sha256": {key: file_hash(path) for key, path in paths.items()}}
 
 
-def plot_filters(initial, trained, output_dir):
-    limit = max(float(np.abs(initial).max()), float(np.abs(trained).max()), 1e-12)
-    fig, axes = plt.subplots(4, 8, figsize=(14, 8), layout="constrained")
-    for offset, weights, label in ((0, initial, "Initial"), (16, trained, "Trained")):
-        for channel, weight in enumerate(weights):
-            ax = axes.ravel()[offset + channel]
-            image = ax.imshow(weight[0], cmap="coolwarm", vmin=-limit, vmax=limit,
-                              interpolation="nearest")
-            ax.set_title(f"{label}: {channel}", fontsize=8)
-            ax.set_xticks([])
-            ax.set_yticks([])
-    fig.colorbar(image, ax=axes.ravel().tolist(), shrink=0.7, label="Weight; same scale in all panels")
-    fig.suptitle("First convolution: 16 filters, each 1 x 5 x 5\nTop: reconstructed seed42 initialization; bottom: trained weights")
-    fig.savefig(output_dir / "filters_before_after.png", dpi=150)
-    plt.close(fig)
-    np.save(output_dir / "filters_initial_reconstructed.npy", initial)
-    np.save(output_dir / "filters_trained.npy", trained)
-    return limit
-
-
-def plot_channels(values, name, columns, path):
-    rows = (len(values) + columns - 1) // columns
-    fig, axes = plt.subplots(rows, columns, figsize=(columns * 2, rows * 2), layout="constrained")
-    maximum = max(float(values.max()), 1e-12)
-    for ax in axes.ravel():
-        ax.axis("off")
-    for channel, ax in enumerate(axes.ravel()[:len(values)]):
-        image = ax.imshow(values[channel], cmap="viridis", vmin=0, vmax=maximum,
-                          interpolation="nearest")
-        ax.set_title(f"Channel {channel}", fontsize=8)
-    fig.colorbar(image, ax=axes.ravel().tolist(), shrink=0.7, label="Activation; shared scale within this figure")
-    fig.suptitle(name)
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-
-
 def explain(project_dir, output_dir):
     project_dir, output_dir = Path(project_dir), Path(output_dir)
     v2_dir = project_dir / "results" / "improvement_v2"
@@ -124,13 +85,16 @@ def explain(project_dir, output_dir):
     # Bunlar egitim aninda kaydedilmis V2 filtreleri degil: ayni seed/factory ile yeniden kurulur.
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(saved["seed"])
-        initial = build_candidate(config)[0].weight.detach().numpy().copy()
-    model = build_candidate(config)
+        initial = build_cnn(channels=config["channels"], pooling=config["pooling"])[0].weight.detach().numpy().copy()
+    model = build_cnn(channels=config["channels"], pooling=config["pooling"])
     model.load_state_dict(saved["model_state_dict"])
     model.eval()
     output_dir.mkdir(parents=True, exist_ok=True)
     trained = model[0].weight.detach().numpy().copy()
-    filter_limit = plot_filters(initial, trained, output_dir)
+    filter_limit = plot_filters(initial, trained, output_dir / "filters_before_after.png",
+                                before_label="Initial (reconstructed)")
+    np.save(output_dir / "filters_initial_reconstructed.npy", initial)
+    np.save(output_dir / "filters_trained.npy", trained)
     source = FashionMNIST(project_dir / "data", train=True, download=False, transform=ToTensor())
     with np.load(split_path, allow_pickle=False) as split:
         indices = split["val_indices"]
@@ -192,8 +156,3 @@ def explain(project_dir, output_dir):
     print("Egitim yapilmadi; test dataset'i acilmadi; model dosyasi korundu.", flush=True)
     print(f"Gorseller: {output_dir}", flush=True)
     return summary
-
-
-if __name__ == "__main__":
-    root = Path(__file__).resolve().parent
-    explain(root, root / "results" / "explanation_v2")

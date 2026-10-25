@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-25",
+  "environment": "Local IAB browser, static HTTP preview",
+  "checked": [
+    "Real model and sample assets loaded; first validation example classified as T-shirt/top",
+    "Shirt example changed the prediction to Shirt; score displays99.96 rather than100",
+    "Convolution/ReLU/pooling disclosure opens and shows computed channel maps",
+    "File chooser loaded public example-9.png as uploaded-photo mode; ground-truth label hidden",
+    "Centering control changed prepared input and scores; uncentered dark28x28 input gives Bot96.59%",
+    "Prepared canvas dimensions28x28; photo controls enabled in upload mode",
+    "Mobile390x844 layout stacks panels and has no horizontal overflow; viewport override reset",
+    "No browser console errors observed in checked local flow",
+    "Invalid text-file selection rejected with explicit format error and activation status",
+    "After an upload error, choosing a valid Shirt example restores prediction and hides activation-error status"
+  ],
+  "scope": "Functional upload checked with a public Fashion-MNIST file; arbitrary real-photo accuracy was not evaluated.",
+  "photo_transmission": "Application code performs local pixel processing; no image-inference upload endpoint."
+}

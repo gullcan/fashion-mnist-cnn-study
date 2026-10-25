@@ -1,21 +1,14 @@
-"""Secilen V2 ayarlarini iki ek seed ile egit; test verisini acma.
-
-Seed42 kazanan dosyasi sabit kalir. Ek seed'lerden yeni kazanan secilmez.
-"""
+"""Repeat the selected settings at two additional seeds without seed selection."""
 
 import csv
-import hashlib
 import json
 from pathlib import Path
 
 import numpy as np
 import torch
 
-from improve_cnn import save_json, train_candidate
-
-
-def sha256(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+from ..artifacts import file_hash, save_json
+from .search import train_candidate
 
 
 def run_stability(project_dir, output_dir):
@@ -28,9 +21,9 @@ def run_stability(project_dir, output_dir):
         raise ValueError("Bu kontrol mevcut seed42 V2 sonucuna gore tasarlandi.")
     epochs = int(source_protocol["epochs_per_candidate"])
     checkpoint = source / winner["checkpoint"]
-    checkpoint_hash = sha256(checkpoint)
+    checkpoint_hash = file_hash(checkpoint)
     split_path = project_dir / "results" / "split_indices.npz"
-    if sha256(split_path) != source_protocol["split_sha256"]:
+    if file_hash(split_path) != source_protocol["split_sha256"]:
         raise ValueError("V2 ile ayni bolme dosyasi kullanilmali.")
     with np.load(split_path, allow_pickle=False) as split:
         train_indices = split["train_indices"]
@@ -67,7 +60,7 @@ def run_stability(project_dir, output_dir):
         rows.append({"seed": seed, "best_epoch": result["best_epoch"],
                      "val_accuracy": result["val_accuracy"],
                      "val_loss": result["val_loss"], "origin": name})
-    if sha256(checkpoint) != checkpoint_hash:
+    if file_hash(checkpoint) != checkpoint_hash:
         raise RuntimeError("Sabit V2 modelinin dosyasi degisti.")
     accuracies = np.array([row["val_accuracy"] for row in rows])
     summary = {
@@ -92,8 +85,3 @@ def run_stability(project_dir, output_dir):
     print("Sunulacak checkpoint seed42 olarak sabit; en sansli seed secilmedi.", flush=True)
     print(f"Kayitlar: {output_dir}", flush=True)
     return summary
-
-
-if __name__ == "__main__":
-    root = Path(__file__).resolve().parent
-    run_stability(root, root / "results" / "stability_v2")

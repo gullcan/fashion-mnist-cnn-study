@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Eğitilmiş küçük bir CNN ile kıyafet sınıflandırmayı deneyin. Fotoğraf yükleyin, modelin gördüğü 28×28 görüntüyü ve gerçek tahminlerini inceleyin.">
+  <meta name="theme-color" content="#f5f4ee">
+  <title>Kıyafet Tanıma Laboratuvarı · CNN Deneyi</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <a class="brand" href="#main" aria-label="Kıyafet Tanıma Laboratuvarı, ana içerik">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <span>Kıyafet Tanıma <strong>Laboratuvarı</strong></span>
+      </a>
+      <a class="source-link" href="https://github.com/gullcan/fashion-mnist-cnn-study" target="_blank" rel="noopener noreferrer">Kaynak kodu <span aria-hidden="true">↗</span></a>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> KÜÇÜK BİR CNN, GÖRÜNÜR BİR ÖĞRENME SÜRECİ</p>
+          <h1 id="page-title">Kıyafeti yükle.<br><em>Modelin gördüğünü keşfet.</em></h1>
+          <p class="hero-description">Bir ürün fotoğrafı seç; eğittiğimiz modelin tahminini ve görüntüyü nasıl işlediğini incele. Hazır örneklerle de başlayabilirsin.</p>
+        </div>
+        <aside class="study-fact" aria-label="Çalışmanın ölçülmüş sonucu">
+          <span class="fact-kicker">KAYITLI DENEY SONUCU</span>
+          <div class="fact-number">%91,08 <span>test doğruluğu</span></div>
+          <p>Fashion-MNIST üzerinde ölçüldü.<br>Yüklediğin fotoğraflar için başarı garantisi değildir.</p>
+          <span class="fact-footnote">10 kategori · 57.190 parametre</span>
+        </aside>
+      </section>
+
+      <section class="workspace" aria-label="Fotoğraf yükleme ve model tahmini">
+        <article class="panel upload-panel">
+          <div class="panel-heading"><h2><span class="step-number">01</span> Görüntüyü seç</h2><span id="source-kind" class="quiet-label">PNG · JPG · WEBP</span></div>
+          <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-label="Ürün fotoğrafı seçmek için tıkla veya buraya bırak">
+            <div id="upload-prompt" class="upload-prompt">
+              <svg width="42" height="42" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M8 26v6h24v-6M20 28V7m0 0-8 8m8-8 8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <strong>Bir ürün fotoğrafı bırak</strong>
+              <span>ya da dosyalarından seç</span>
+            </div>
+            <img id="original-image" class="original-image" alt="Seçilen ürün görüntüsü" hidden>
+            <span id="replace-hint" class="replace-hint" hidden>Farklı bir fotoğraf seç ↗</span>
+          </div>
+          <input id="file-input" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          <div class="upload-caption"><span id="file-caption">Tek ürün, sade arka plan ve önden çekim daha uygun.</span><span class="file-limit">En fazla 8 MB</span></div>
+
+          <div class="photo-controls" id="photo-controls">
+            <label for="background-select">Arka plan
+              <select id="background-select"><option value="auto">Otomatik</option><option value="light">Açık zemin</option><option value="dark">Koyu zemin</option></select>
+            </label>
+            <label class="checkbox-control"><input id="center-checkbox" type="checkbox" checked><span>Ürünü ortala</span></label>
+          </div>
+          <p id="processing-note" class="processing-note">Açık zemin ters çevrilir; görüntü gri tona ve 28×28 boyuta hazırlanır. Bu işlem arka planı anlamsal olarak ayırmaz.</p>
+          <p class="privacy-note"><svg width="14" height="16" viewBox="0 0 14 16" fill="none" aria-hidden="true"><rect x="2" y="7" width="10" height="8" rx="2" stroke="currentColor"/><path d="M4 7V4a3 3 0 0 1 6 0v3" stroke="currentColor"/></svg>Fotoğraf tarayıcında işlenir; sunucuya yüklenmez.</p>
+        </article>
+
+        <article class="panel result-panel" aria-labelledby="result-heading">
+          <div class="panel-heading"><h2 id="result-heading"><span class="step-number">02</span> Modelin tahmini</h2><span id="model-status" class="status-badge" data-state="loading" role="status"><i></i><span>Model yükleniyor</span></span></div>
+          <div id="result-empty" class="result-empty"><span class="empty-symbol" aria-hidden="true">↳</span><h3>Önce bir görüntü seç.</h3><p>Sonuçlar eğitilmiş CNN’den<br>bu tarayıcıda hesaplanacak.</p></div>
+          <div id="prediction-content" hidden>
+            <div class="prediction-heading"><p class="overline">EN YÜKSEK SKORLU KATEGORİ</p><h3 id="prediction-label">—</h3><div class="prediction-meta"><span id="prediction-english"></span><span id="runtime-label"></span></div></div>
+            <div id="example-truth" class="example-truth" hidden></div>
+            <ol id="score-list" class="score-list" aria-label="Modelin ilk üç sınıf skoru"></ol>
+            <div class="prepared-section">
+              <div class="prepared-image"><canvas id="prepared-canvas" width="28" height="28" aria-label="Modelin gerçekten işlediği 28 çarpı 28 gri tonlamalı görüntü"></canvas><span>28 × 28 × 1</span></div>
+              <div><h4>Modelin gördüğü bu.</h4><p>Renk ve yüksek çözünürlük gider. Tahmin, soldaki fotoğrafın bu küçük sayısal temsiliyle hesaplanır.</p><a href="#mechanism">İşlem adımlarını incele <span aria-hidden="true">↓</span></a></div>
+            </div>
+          </div>
+          <p id="error-message" class="error-message" role="alert" hidden></p>
+          <button id="reload-button" class="reload-button" type="button" hidden>Modeli yeniden yükle</button>
+          <p class="score-note">Skorlar doğruluk olasılığının doğrulanmış bir ölçümü değildir. Model yalnızca aşağıdaki 10 kategoriden birini seçer; farklı nesnelerde de yüksek skor verebilir.</p>
+        </article>
+      </section>
+
+      <section class="examples-section" aria-labelledby="examples-heading">
+        <div class="section-heading"><div><span class="eyebrow">KARŞILAŞTIRARAK DENE</span><h2 id="examples-heading">Hazır örneklerle başla.</h2></div><p>Doğrulama kümesinden, her sınıfın ilk örneği.<br>Tahminleri burada yeniden hesaplanır.</p></div>
+        <div id="examples-list" class="examples-list" aria-label="Fashion-MNIST doğrulama örnekleri"><p class="examples-loading">Örnekler yükleniyor…</p></div>
+      </section>
+
+      <section id="mechanism" class="mechanism-section">
+        <details id="mechanism-details">
+          <summary><span><span class="eyebrow">SONUCUN ARKASINDAKİ İŞLEMLER</span><strong>Modelin içinde ne oluyor?</strong></span><span class="details-icon" aria-hidden="true">+</span></summary>
+          <div class="mechanism-content">
+            <p class="mechanism-intro">Aynı ilk filtrenin seçtiğin görüntüye verdiği tepkiyi izliyorsun. ReLU negatif değerleri sıfırlar; average pooling küçük bölgeleri ortalayarak haritayı küçültür.</p>
+            <p id="activation-status" class="activation-status" role="status">Bir görüntü seçtiğinde bu katmanların haritaları burada görünecek.</p>
+            <div class="activation-grid">
+              <figure><canvas id="conv-map" width="24" height="24" aria-label="Birinci convolution katmanının ilk kanal çıktısı"></canvas><figcaption><strong>Convolution</strong><span>24 × 24 · kanal 0</span></figcaption></figure>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <figure><canvas id="relu-map" width="24" height="24" aria-label="ReLU sonrası ilk kanal çıktısı"></canvas><figcaption><strong>ReLU</strong><span>24 × 24 · kanal 0</span></figcaption></figure>
+              <span class="flow-arrow" aria-hidden="true">→</span>
+              <figure><canvas id="pool-map" width="12" height="12" aria-label="Average pooling sonrası ilk kanal çıktısı"></canvas><figcaption><strong>Average pooling</strong><span>12 × 12 · kanal 0</span></figcaption></figure>
+            </div>
+            <div class="activation-legend"><span><i class="legend-negative"></i> Negatif</span><span><i class="legend-zero"></i> Sıfır</span><span><i class="legend-positive"></i> Pozitif</span><small>Üç harita aynı renk ölçeğinde.</small></div>
+            <p class="interpretation-note">Bu haritalar katman tepkileridir; tek başlarına tahminin nedenini kanıtlamaz. İlk kanal gösterim amacıyla seçildi, “en önemli filtre” olduğu için değil.</p>
+            <div class="architecture"><h3>Küçük mimari, gerçek eğitilmiş ağırlıklar</h3><div class="architecture-flow"><span>28×28 görüntü</span><b>→</b><span>Conv16 + ReLU + Pool</span><b>→</b><span>Conv32 + ReLU + Pool</span><b>→</b><span>512 → 84 → 10</span></div><p>2 convolution + 2 doğrusal katman · 57.190 öğrenilmiş parametre · eğitim bu sitede tekrarlanmaz.</p></div>
+          </div>
+        </details>
+      </section>
+
+      <aside class="limitations" aria-labelledby="limitations-title"><span class="limitations-mark" aria-hidden="true">i</span><div><h2 id="limitations-title">Bu bir öğrenme ve gösterim uygulaması.</h2><p>Model, standartlaştırılmış gri tonlamalı Fashion-MNIST görüntüleriyle eğitildi. Günlük fotoğraflar farklı ışık, açı, arka plan ve nesneler içerebilir. %91,08 sonucu bu yüklemelerde ölçülmedi. Resmî test kümesi V1 ve V2’de yeniden kullanıldı; yeni bir kör test değildir.</p></div></aside>
+    </main>
+
+    <footer><span>Gülcan · CNN görüntü sınıflandırma çalışması</span><div><a href="https://github.com/gullcan/fashion-mnist-cnn-study" target="_blank" rel="noopener noreferrer">GitHub ↗</a><a href="https://github.com/zalandoresearch/fashion-mnist" target="_blank" rel="noopener noreferrer">Veri: Fashion-MNIST · Zalando Research (MIT) ↗</a></div></footer>
+  </div>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>

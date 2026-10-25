@@ -1,4 +1,4 @@
-"""Fashion-MNIST: iki modeli egit, en iyi agirliklari ve sonuclari kaydet."""
+"""Linear baseline and original CNN under the recorded V1 protocol."""
 
 import csv
 import hashlib
@@ -8,102 +8,15 @@ import time
 from pathlib import Path
 
 import matplotlib
-
-matplotlib.use("Agg")  # Grafikleri pencere acmadan dosyaya uret.
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 import torchvision
 from torch import nn
-from torch.utils.data import DataLoader, Subset
-from torchvision.datasets import FashionMNIST
-from torchvision.transforms import ToTensor
 
-from models import build_baseline, build_cnn
-from training import evaluate, train_one_epoch
-
-
-def make_loaders(project_dir, seed, batch_size):
-    """Kaydedilmis bolmeyi kullan; her deney icin yeni karistirici kur."""
-    with np.load(project_dir / "results" / "split_indices.npz", allow_pickle=False) as split:
-        train_indices = split["train_indices"]
-        val_indices = split["val_indices"]
-
-    if len(train_indices) != 54000 or len(val_indices) != 6000:
-        raise ValueError("Kayitli bolme 54000 egitim / 6000 dogrulama olmali.")
-    combined = np.concatenate((train_indices, val_indices))
-    if not np.array_equal(np.sort(combined), np.arange(60000)):
-        raise ValueError("Her kaynak ornek bolmede tam bir kez bulunmali.")
-
-    dataset = FashionMNIST(
-        root=project_dir / "data", train=True, download=False, transform=ToTensor()
-    )
-    generator = torch.Generator().manual_seed(seed)
-    train_loader = DataLoader(
-        Subset(dataset, train_indices.tolist()),
-        batch_size=batch_size, shuffle=True, generator=generator,
-        num_workers=0, drop_last=False,
-    )
-    val_loader = DataLoader(
-        Subset(dataset, val_indices.tolist()),
-        batch_size=batch_size, shuffle=False, num_workers=0, drop_last=False,
-    )
-    return train_loader, val_loader, dataset.classes
-
-
-def synchronize(device):
-    """GPU islemleri bitmeden sure olcumunu sonlandirma."""
-    if device.type == "cuda":
-        torch.cuda.synchronize(device)
-
-
-def plot_history(history, name, path):
-    epochs = [row["epoch"] for row in history]
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4), layout="constrained")
-    for ax, metric, label in zip(axes, ("loss", "accuracy"), ("Loss", "Accuracy (%)")):
-        for part, title in (("train", "Training (online)"), ("val", "Validation")):
-            ax.plot(epochs, [row[f"{part}_{metric}"] for row in history], label=title)
-        ax.set(xlabel="Epoch", ylabel=label)
-        ax.set_xticks(epochs)
-        ax.grid(alpha=0.25)
-        ax.legend()
-    fig.suptitle(name)
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-
-
-def plot_filters(before, after, best_epoch, path):
-    """Ilk ve secilen modelin filtrelerini ayni renk olceginde goster."""
-    limit = max(float(np.abs(before).max()), float(np.abs(after).max()))
-    fig, axes = plt.subplots(2, 6, figsize=(13, 5), layout="constrained")
-    for row, filters in enumerate((before, after)):
-        for index, ax in enumerate(axes[row]):
-            picture = ax.imshow(
-                filters[index, 0], cmap="coolwarm", vmin=-limit, vmax=limit,
-                interpolation="nearest",
-            )
-            stage = "Initial" if row == 0 else f"Selected epoch {best_epoch}"
-            ax.set_title(f"{stage}\nFilter {index}", fontsize=9)
-            ax.axis("off")
-    fig.colorbar(picture, ax=axes.ravel().tolist(), shrink=0.8, label="Weight")
-    fig.suptitle("CNN first-layer weights: before and after training")
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-
-
-def plot_comparison(histories, path):
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4), layout="constrained")
-    for name, history in histories.items():
-        epochs = [row["epoch"] for row in history]
-        axes[0].plot(epochs, [row["val_loss"] for row in history], label=name)
-        axes[1].plot(epochs, [row["val_accuracy"] for row in history], label=name)
-    for ax, label in zip(axes, ("Validation loss", "Validation accuracy (%)")):
-        ax.set(xlabel="Epoch", ylabel=label)
-        ax.set_xticks(epochs)
-        ax.grid(alpha=0.25)
-        ax.legend()
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
+from ..data import make_loaders
+from ..engine import evaluate, train_one_epoch, synchronize
+from ..models import build_baseline, build_cnn
+from ..plotting import plot_history, plot_comparison, plot_filters
 
 
 def run_experiment(project_dir, output_dir, epochs=10, batch_size=64, lr=0.001):
@@ -204,7 +117,8 @@ def run_experiment(project_dir, output_dir, epochs=10, batch_size=64, lr=0.001):
         if before is not None:
             after = model[0].weight.detach().cpu().clone().numpy()
             np.save(model_dir / "filters_selected.npy", after)
-            plot_filters(before, after, checkpoint["epoch"], model_dir / "filters_comparison.png")
+            plot_filters(before, after, model_dir / "filters_comparison.png",
+                         after_label=f"Selected epoch {checkpoint['epoch']}")
 
         summaries.append({
             "model_name": name, "best_epoch": checkpoint["epoch"],
@@ -228,8 +142,3 @@ def run_experiment(project_dir, output_dir, epochs=10, batch_size=64, lr=0.001):
         )
     print(f"Sonuclar: {output_dir}", flush=True)
     return report
-
-
-if __name__ == "__main__":
-    root = Path(__file__).resolve().parent
-    run_experiment(root, root / "results" / "experiment")

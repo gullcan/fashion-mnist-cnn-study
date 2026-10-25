@@ -1,138 +1,21 @@
-"""Secilen modelleri incele; protokolu sabitle; nihai test raporunu uret.
-
-Ek paket gerekmez. Metrikler, satirlari gercek ve sutunlari tahmin olan
-confusion matrix'ten hesaplanir. Analiz sirasinda egitim yapilmaz.
-"""
+"""Frozen V1 evaluation and reusable report generation."""
 
 import csv
-import hashlib
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 
-import matplotlib
-
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from torch import nn
-from torch.utils.data import DataLoader, Subset
+from torch.utils.data import Subset
 from torchvision.datasets import FashionMNIST
 from torchvision.transforms import ToTensor
 
-from models import build_baseline, build_cnn
-
-
-def save_json(path, value):
-    with Path(path).open("w", encoding="utf-8") as file:
-        json.dump(value, file, indent=2, ensure_ascii=False, allow_nan=False)
-
-
-def file_hash(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
-
-
-def classification_metrics(targets, predictions, classes):
-    """Precision=TP/tahmin, recall=TP/gercek, F1=2TP/(tahmin+gercek)."""
-    count = len(classes)
-    matrix = np.bincount(
-        count * targets + predictions, minlength=count * count
-    ).reshape(count, count)
-    tp = matrix.diagonal().astype(np.float64)
-    support = matrix.sum(axis=1)
-    predicted_count = matrix.sum(axis=0)
-    precision = np.divide(tp, predicted_count, out=np.zeros(count), where=predicted_count > 0)
-    recall = np.divide(tp, support, out=np.zeros(count), where=support > 0)
-    denominator = predicted_count + support
-    f1 = np.divide(2 * tp, denominator, out=np.zeros(count), where=denominator > 0)
-    per_class = [
-        {
-            "class_id": index, "class_name": name,
-            "precision": float(precision[index]), "recall": float(recall[index]),
-            "f1": float(f1[index]), "support": int(support[index]),
-        }
-        for index, name in enumerate(classes)
-    ]
-    metrics = {
-        "samples": int(matrix.sum()), "correct": int(tp.sum()),
-        "errors": int(matrix.sum() - tp.sum()),
-        "accuracy_pct": float(100 * tp.sum() / matrix.sum()),
-        "macro_f1": float(f1.mean()), "zero_division": 0,
-    }
-    return matrix, metrics, per_class
-
-
-def collect_predictions(model, dataset, device, batch_size):
-    """Her goruntuyu bir kez isle; agin ayarlarini degistirme."""
-    loader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=0)
-    model.eval()
-    targets_all, predictions_all, probabilities_all = [], [], []
-    loss_sum, sample_count = 0.0, 0
-    loss_fn = nn.CrossEntropyLoss()
-    with torch.no_grad():
-        for images, targets in loader:
-            images, targets = images.to(device), targets.to(device)
-            logits = model(images)
-            loss_sum += loss_fn(logits, targets).item() * len(targets)
-            sample_count += len(targets)
-            targets_all.append(targets.cpu().numpy())
-            predictions_all.append(logits.argmax(dim=1).cpu().numpy())
-            probabilities_all.append(logits.softmax(dim=1).cpu().numpy())
-    return (
-        np.concatenate(targets_all), np.concatenate(predictions_all),
-        np.concatenate(probabilities_all), loss_sum / sample_count,
-    )
-
-
-def plot_confusion(matrix, classes, name, normalized, path):
-    """Satir: gercek sinif; sutun: secilen sinif. Kosegen dogru cevaplar."""
-    support = matrix.sum(axis=1, keepdims=True)
-    values = np.divide(
-        matrix, support, out=np.zeros_like(matrix, dtype=float), where=support > 0
-    ) if normalized else matrix
-    maximum = 1.0 if normalized else max(int(support.max()), 1)
-    fig, ax = plt.subplots(figsize=(10, 9), layout="constrained")
-    image = ax.imshow(values, cmap="Blues", vmin=0, vmax=maximum)
-    for row in range(len(classes)):
-        for col in range(len(classes)):
-            label = f"{values[row, col]:.2f}" if normalized else str(matrix[row, col])
-            ax.text(col, row, label, ha="center", va="center", fontsize=7,
-                    color="white" if values[row, col] > maximum / 2 else "black")
-    ax.set_xticks(range(len(classes)), classes, rotation=45, ha="right")
-    ax.set_yticks(range(len(classes)), classes)
-    ax.set(xlabel="Predicted label", ylabel="True label",
-           title=f"{name}: {'fraction of each true class' if normalized else 'sample counts'}")
-    fig.colorbar(image, ax=ax, shrink=0.8)
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-
-
-def save_gallery(raw_dataset, source_indices, targets, predictions, probabilities,
-                 positions, title, path):
-    """Gorseldeki ID, predictions.csv icindeki kaynak veri indeksiyle aynidir."""
-    fig, axes = plt.subplots(2, 5, figsize=(13, 6), layout="constrained")
-    classes = raw_dataset.classes
-    for ax in axes.ravel():
-        ax.axis("off")
-    entries = []
-    for position, ax in zip(positions, axes.ravel()):
-        position = int(position)
-        index = int(source_indices[position])
-        true_id, predicted_id = int(targets[position]), int(predictions[position])
-        score = float(probabilities[position, predicted_id])
-        image = raw_dataset.data[index].numpy()
-        ax.imshow(image, cmap="gray", vmin=0, vmax=255, interpolation="nearest")
-        ax.set_title(
-            f"ID {index} | True: {classes[true_id]}\n"
-            f"Pred: {classes[predicted_id]} | score: {score:.3f}", fontsize=8,
-        )
-        entries.append({"dataset_index": index, "true_label": true_id,
-                        "predicted_label": predicted_id, "softmax_score": score})
-    fig.suptitle(title)
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-    return entries
+from .artifacts import file_hash, save_json
+from .engine import collect_predictions
+from .metrics import classification_metrics
+from .models import build_baseline, build_cnn
+from .plotting import plot_confusion, save_gallery
 
 
 def analyze_split(raw_dataset, source_indices, models, device, batch_size,
@@ -280,8 +163,3 @@ def run_analysis(project_dir, output_dir, include_final_test=False):
               f"macro-F1={result['macro_f1']:.4f} | errors={result['errors']}/{result['samples']}", flush=True)
     print(f"Analiz dosyalari: {output_dir}", flush=True)
     return report
-
-
-if __name__ == "__main__":
-    root = Path(__file__).resolve().parent
-    run_analysis(root, root / "results" / "analysis", include_final_test=True)

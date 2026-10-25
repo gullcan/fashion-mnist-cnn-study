@@ -1,0 +1,82 @@
+[
+  {
+    "id": "fashion-0",
+    "index": 49804,
+    "labelIndex": 0,
+    "label": "T-shirt/top",
+    "name": "T-shirt/top",
+    "image": "./examples/example-0.png"
+  },
+  {
+    "id": "fashion-1",
+    "index": 47822,
+    "labelIndex": 1,
+    "label": "Trouser",
+    "name": "Trouser",
+    "image": "./examples/example-1.png"
+  },
+  {
+    "id": "fashion-2",
+    "index": 37232,
+    "labelIndex": 2,
+    "label": "Pullover",
+    "name": "Pullover",
+    "image": "./examples/example-2.png"
+  },
+  {
+    "id": "fashion-3",
+    "index": 29209,
+    "labelIndex": 3,
+    "label": "Dress",
+    "name": "Dress",
+    "image": "./examples/example-3.png"
+  },
+  {
+    "id": "fashion-4",
+    "index": 30449,
+    "labelIndex": 4,
+    "label": "Coat",
+    "name": "Coat",
+    "image": "./examples/example-4.png"
+  },
+  {
+    "id": "fashion-5",
+    "index": 40323,
+    "labelIndex": 5,
+    "label": "Sandal",
+    "name": "Sandal",
+    "image": "./examples/example-5.png"
+  },
+  {
+    "id": "fashion-6",
+    "index": 35190,
+    "labelIndex": 6,
+    "label": "Shirt",
+    "name": "Shirt",
+    "image": "./examples/example-6.png"
+  },
+  {
+    "id": "fashion-7",
+    "index": 42639,
+    "labelIndex": 7,
+    "label": "Sneaker",
+    "name": "Sneaker",
+    "image": "./examples/example-7.png"
+  },
+  {
+    "id": "fashion-8",
+    "index": 49945,
+    "labelIndex": 8,
+    "label": "Bag",
+    "name": "Bag",
+    "image": "./examples/example-8.png"
+  },
+  {
+    "id": "fashion-9",
+    "index": 44778,
+    "labelIndex": 9,
+    "label": "Ankle boot",
+    "name": "Ankle boot",
+    "image": "./examples/example-9.png"
+  }
+]

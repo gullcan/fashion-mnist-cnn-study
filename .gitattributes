@@ -1,4 +1,4 @@
-* text=auto
+* text=auto eol=lf
 *.py text eol=lf
 *.md text eol=lf
 *.json text eol=lf
@@ -8,6 +8,8 @@
 *.npz binary
 *.npy binary
 *.png binary
+*.jpg binary
+*.bin binary
 # Preserve original report bytes: frozen identities contain their SHA256 hashes.
 results/** -text
 

@@ -1,8 +1,4 @@
-# Install the desired PyTorch build first; see docs/REPRODUCING.md.
-# Public version pins also accept the matching installed +cu130 or +cpu build.
-torch==2.14.1
-torchvision==0.29.1
-numpy==2.5.2
-matplotlib==3.11.2
-pillow==12.3.0
+# Versions have one source of truth: pyproject.toml.
+# Install the desired CPU/CUDA PyTorch build first; see docs/REPRODUCING.md.
+-e .
 

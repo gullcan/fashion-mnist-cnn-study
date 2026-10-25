@@ -12,4 +12,7 @@ __pycache__/
 Thumbs.db
 *.log
 *.tmp
+*.egg-info/
+build/
+/dist/
 

@@ -1,8 +1,4 @@
-"""Bes kontrollu CNN denemesi: yalnizca egitim ve dogrulama kullanilir.
-
-Her deneme sifirdan baslar. Her asamada simdiye kadarki en iyi dogrulama
-adayina bir degisiklik eklenir. V1 agirliklari ve nihai test kaydi korunur.
-"""
+"""The bounded five-candidate V2 study; selection uses validation only."""
 
 import csv
 import hashlib
@@ -15,58 +11,15 @@ import numpy as np
 import torch
 import torchvision
 from torch import nn
-from torch.utils.data import DataLoader, Subset
 from torchvision.datasets import FashionMNIST
-from torchvision.transforms import Compose, RandomCrop, RandomHorizontalFlip, ToTensor
+from torchvision.transforms import ToTensor
 
-from analyze_experiment import analyze_split
-from run_experiment import plot_comparison, plot_history, synchronize
-from training import evaluate, train_one_epoch
-
-
-def save_json(path, value):
-    with Path(path).open("w", encoding="utf-8") as file:
-        json.dump(value, file, indent=2, ensure_ascii=False, allow_nan=False)
-
-
-def build_candidate(config):
-    """Iki convolution blogunu koru; yalnizca filtre sayisi/pooling degisir."""
-    first, second = config["channels"]
-    pooling = nn.MaxPool2d if config["pooling"] == "max" else nn.AvgPool2d
-    return nn.Sequential(
-        nn.Conv2d(1, first, kernel_size=5, stride=1, padding=0),
-        nn.ReLU(),
-        pooling(kernel_size=2, stride=2),
-        nn.Conv2d(first, second, kernel_size=5, stride=1, padding=0),
-        nn.ReLU(),
-        pooling(kernel_size=2, stride=2),
-        nn.Flatten(start_dim=1),
-        nn.Linear(second * 4 * 4, 84),
-        nn.ReLU(),
-        nn.Linear(84, 10),
-    )
-
-
-def make_loaders(project_dir, train_indices, val_indices, seed, augment):
-    # Dogrulama ayri bir dataset gorunumu kullanir; rastgele donusum almaz.
-    train_transform = Compose([
-        RandomCrop(28, padding=2), RandomHorizontalFlip(p=0.5), ToTensor()
-    ]) if augment else ToTensor()
-    train_source = FashionMNIST(project_dir / "data", train=True,
-                               download=False, transform=train_transform)
-    val_source = FashionMNIST(project_dir / "data", train=True,
-                             download=False, transform=ToTensor())
-    train_generator = torch.Generator().manual_seed(seed)
-    val_generator = torch.Generator().manual_seed(seed)
-    train_loader = DataLoader(
-        Subset(train_source, train_indices.tolist()), batch_size=64,
-        shuffle=True, generator=train_generator, num_workers=0, drop_last=False,
-    )
-    val_loader = DataLoader(
-        Subset(val_source, val_indices.tolist()), batch_size=64,
-        shuffle=False, generator=val_generator, num_workers=0, drop_last=False,
-    )
-    return train_loader, val_loader, val_source.classes
+from ..analysis import analyze_split
+from ..artifacts import save_json
+from ..data import make_loaders
+from ..engine import evaluate, train_one_epoch, synchronize
+from ..models import build_cnn
+from ..plotting import plot_comparison, plot_history
 
 
 def better(accuracy, loss, previous_accuracy, previous_loss):
@@ -78,16 +31,19 @@ def better(accuracy, loss, previous_accuracy, previous_loss):
 
 def train_candidate(project_dir, run_dir, name, parent, config, train_indices,
                     val_indices, seed, epochs, device):
+    if epochs < 1:
+        raise ValueError("epochs must be at least 1")
     run_dir.mkdir(parents=True, exist_ok=True)
     torch.manual_seed(seed)
-    model = build_candidate(config).to(device)
+    model = build_cnn(channels=config["channels"], pooling=config["pooling"]).to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer, step_size=10, gamma=0.3
     ) if config["scheduler"] else None
     loss_fn = nn.CrossEntropyLoss()
     train_loader, val_loader, classes = make_loaders(
-        project_dir, train_indices, val_indices, seed, config["augmentation"]
+        project_dir, seed, augmentation=config["augmentation"],
+        train_indices=train_indices, val_indices=val_indices
     )
     run_config = {
         "name": name, "parent_run": parent, "candidate_config": config,
@@ -220,7 +176,7 @@ def run_improvements(project_dir, output_dir, epochs=30):
 
     # Kazanan icin sinif metrikleri ve yanlis ornekler; yine yalnizca dogrulama.
     selected = torch.load(output_dir / winner["checkpoint"], map_location=device, weights_only=True)
-    selected_model = build_candidate(selected["candidate_config"]).to(device)
+    selected_model = build_cnn(channels=selected["candidate_config"]["channels"], pooling=selected["candidate_config"]["pooling"]).to(device)
     selected_model.load_state_dict(selected["model_state_dict"])
     val_source = FashionMNIST(project_dir / "data", train=True, download=False, transform=ToTensor())
     winner_analysis = analyze_split(
@@ -251,8 +207,3 @@ def run_improvements(project_dir, output_dir, epochs=30):
     print(f"V1 dogrulamasini gecti: {improved} | macro-F1={winner_analysis['macro_f1']:.4f}", flush=True)
     print(f"Kayitlar: {output_dir}", flush=True)
     return report
-
-
-if __name__ == "__main__":
-    root = Path(__file__).resolve().parent
-    run_improvements(root, root / "results" / "improvement_v2")

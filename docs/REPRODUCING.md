@@ -1,8 +1,8 @@
-# Running and reproducing the study
+# Install, run and reproduce
 
-## Install
+Run commands from the cloned repository root. Python 3.14 matches the measured environment; the package declares Python >=3.12 because of its pinned dependencies. Other versions/builds are not claimed to reproduce identical numerical results.
 
-Run commands from the repository root. The recorded environment used Python 3.14.7 on Windows x64. Other platforms have not been validated for identical numerical results.
+## Installation
 
 ```powershell
 py -3.14 -m venv .venv
@@ -10,89 +10,91 @@ py -3.14 -m venv .venv
 python -m pip install --upgrade pip
 ```
 
-For the recorded NVIDIA CUDA 13.0 build:
-
-```powershell
-python -m pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu130
-python -m pip install -r requirements.txt
-python check_environment.py
-```
-
-For CPU-only use, choose the CPU build instead:
+Choose one PyTorch build. CPU is enough for prediction and checks:
 
 ```powershell
 python -m pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cpu
-python -m pip install -r requirements.txt
 ```
 
-`check_environment.py` is specifically an NVIDIA GPU check and deliberately raises an error without CUDA. The other pipeline functions automatically use CPU when CUDA is unavailable; `predict.py` deliberately uses CPU. Neither a new driver nor a separate CUDA Toolkit installation is part of this repository's setup. The recorded PyTorch build uses CUDA 13.0 even though `nvidia-smi` reported a different driver-supported CUDA version.
-
-These are the versions measured in this project. Consult the [official PyTorch installer](https://pytorch.org/get-started/locally/) if a matching wheel is unavailable on your platform. A different version is a new environment and may require adapting pins and the reconstructed-initialization check in `explain_v2.py`.
-
-## Inspect the shipped evidence first
-
-The README, notebook, saved model, reports and images can be inspected without training. Only running a dataset-based prediction needs the raw dataset:
+The recorded NVIDIA environment used CUDA 13.0 wheels:
 
 ```powershell
-python inspect_dataset.py
-python predict.py --index 49804
+python -m pip install torch==2.14.1 torchvision==0.29.1 --index-url https://download.pytorch.org/whl/cu130
 ```
 
-`inspect_dataset.py` downloads data once. Torchvision may download test files too; downloading a file is different from using its labels for model selection. The prediction command uses the training-source dataset and does not fit a model. It reports whether the selected source index belongs to the recorded training or validation split.
-
-## Notebook
-
-Jupyter is optional; it is not needed for training or inference scripts:
+Then install the project. Exact runtime dependency versions live only in `pyproject.toml`; `requirements.txt` is a convenience entry pointing to the same package.
 
 ```powershell
-python -m pip install jupyterlab
-python -m jupyterlab cnn_project.ipynb
+python -m pip install -e .
+python -m fashion_cnn --help
+python -m fashion_cnn verify
+python -m fashion_cnn download
 ```
 
-The notebook contains saved outputs and can be read on GitHub. Its code cells run sequentially using the saved artifacts; they do not download data, update model weights, launch training or reevaluate the test set. Launch it from the repository root and use this environment's kernel. JupyterLab is an optional reader/editor dependency and was not present in the measured training environment. See the [Jupyter installation documentation](https://docs.jupyter.org/en/latest/install.html).
+The download command uses torchvision to obtain the official files. It does not train or evaluate a model. Raw data, the virtual environment and new run outputs are ignored by Git.
 
-## Full isolated training reproduction
-
-First download the data. Then:
+## Saved-model prediction
 
 ```powershell
-python reproduce.py --output runs/reproduction-01
+python -m fashion_cnn predict --index 49804
 ```
 
-The destination must not exist. The script copies the local Fashion-MNIST data and committed split, then executes the actual pipeline functions in order:
+This loads the frozen seed42 checkpoint on CPU and predicts an official training-source image. Source index 49804 is in the saved validation split. Input indices range from 0 to 59,999. The output includes split membership, real/predicted class and top-three softmax scores; scores are not calibrated correctness probabilities.
 
-1. `run_experiment`: linear baseline and V1 CNN, 10 epochs each.
-2. `run_analysis`: fixed V1 checkpoint validation and official test evaluation.
-3. `run_improvements`: five V2 candidates, 30 epochs each, validation-based selection.
-4. `run_stability`: two additional seeds, 30 epochs each.
-5. `run_evaluation`: selected seed42 V2 checkpoint on the official test.
-6. `explain`: validation activation maps and paired errors from saved test predictions.
-
-The total is **230 training epochs** across nine runs, plus evaluations. The original machine completed the five V2 candidates in about 25 minutes of measured training/validation time; two extra seeds take additional time. Timings exclude some startup, file-writing and plotting work. CPU execution can be substantially slower. The copied raw data uses additional disk space; no distributed system or external experiment tracker is used.
-
-The new workspace's `results` folder has the same schema as the shipped `results` folder. Its models are new artifacts: compare them with the original reports rather than claiming exact equality. Cross-device numerical equality is not guaranteed.
-
-The official test has already been used in this study. A rerun is a **benchmark reproduction**, not a new blind holdout. V2 selection uses validation only. The final selected seed is fixed before the stability scores are inspected. Do not choose the highest-scoring test candidate or keep tuning from test results.
-
-## Individual stages and overwritten outputs
-
-The original scripts are retained for inspection and direct use. Their command-line entry points use their own directory as the project root and write to fixed `results/...` destinations. Some training scripts overwrite their own existing outputs; evaluation scripts may read cached test reports when their frozen identity matches. Use `reproduce.py` for a complete rerun in a fresh workspace, rather than sequentially replacing the shipped evidence. `prepare_data.py` is a learning exercise that writes the split and is not needed to use the committed split.
-
-The checkpoint files contain model weights and experiment metadata, not complete optimizer/scheduler states for resuming interrupted training. Reruns start from scratch.
-
-## Artifact identity
-
-`artifact_manifest.json` records SHA256 and size for the packaged files. `verify_artifacts.py` checks them without downloading data or executing training:
+## One new training run
 
 ```powershell
-python verify_artifacts.py
+python -m fashion_cnn train --epochs 30 --seed 42 --output runs/training-01
+python -m fashion_cnn predict --index 49804 --checkpoint runs/training-01/best.pt
 ```
 
-The manifest deliberately excludes itself and the verifier. Local extra files, including downloaded data and a virtual environment, are not part of the snapshot. Raw JSON reports keep their original measured values; old absolute paths in provenance metadata describe the original run and are not used by the prediction or reproduction scripts to find files.
+Training starts from new weights using the selected V2 recipe, fixed split, batch64, Adam0.001 and crop/flip augmentation on training data only. Validation selects maximum accuracy, then lower loss. Histories, config, selected weights and curves are saved together. CUDA is used when available. This single run does not repeat the five-candidate search or change the published model.
 
-## Verification scope
+## Inspect the recorded model
 
-The packaged notebook's code cells were executed in order with the project's Python interpreter. CPU inference on three recorded validation samples agreed with saved CUDA predictions in class and within an absolute softmax-score tolerance of 0.0001; the largest observed difference was about 0.0000301. Repeating the original CUDA batch composition and deterministic settings reproduced these samples' stored probabilities exactly. Small batch/device numerical differences should not be mistaken for retraining or a different checkpoint.
+```powershell
+python -m fashion_cnn evaluate --output runs/validation-01
+python -m fashion_cnn explain --output runs/explanation-01
+```
 
-The new reproduction entry point was checked with an isolated control run replacing training stages; the full 230-epoch training campaign was not repeated during packaging. A new Jupyter installation, CPU-only package installation and deployment were not performed during packaging.
+Evaluation checks the fixed checkpoint on all 6,000 validation images and saves predictions, metrics and confusion matrices. Explanation uses validation activations and the already-recorded paired error predictions. Neither command opens the official test set by default. To deliberately repeat the benchmark:
 
+```powershell
+python -m fashion_cnn evaluate --test --output runs/benchmark-reuse-01
+```
+
+This is reuse of an already-seen official test, not a fresh blind test. Do not use this result to select settings and then call it independent evaluation. Every CLI output destination must be new; choose a new name for another run.
+
+## Full historical campaign
+
+```powershell
+python -m fashion_cnn reproduce --output runs/reproduction-01
+```
+
+This performs nine training runs totaling 230 epochs: two V1 runs ×10, five V2 candidates ×30, and two additional V2 seeds ×30. It copies downloaded data and the fixed split into the new workspace, then runs V1 analysis, V2 search, stability, frozen evaluation and explanation. It explicitly reuses the official test benchmark as in the original study. The source `results/` is preserved. The destination must not exist and must be outside the source data directory. This is a full campaign, not a quick installation check.
+
+## Tests, notebook and browser
+
+```powershell
+python -m unittest discover -s tests -v
+python -m fashion_cnn verify
+node web/tests/test-runtime.mjs
+node web/tests/test-preprocess.mjs
+```
+
+The tests do not download data, rerun the full training campaign or evaluate the official test set. Node22 is used by CI; no npm dependencies are needed. Optional notebook tooling:
+
+```powershell
+python -m pip install -e ".[notebook]"
+python -m jupyter lab cnn_project.ipynb
+```
+
+The notebook is a reading guide using toy calculations and stored evidence. Its cells do not automatically train or open the official test set. See [web source and local preview](../web/README.md) for the static demo.
+
+## Reproducibility boundaries
+
+`verify` checks SHA256 and byte size for the tracked snapshot listed in `artifact_manifest.json`, excluding the manifest itself. It checks source and recorded artifacts, not ignored local data or future runs. Original report bytes are preserved. When deliberately editing source, regenerate the manifest for a new reviewed snapshot; do not replace original results with invented values.
+
+Deterministic settings and fixed seeds reduce variation within the measured setup. Hardware, libraries and floating-point execution can still change outputs. The refactor was checked on saved weights and a complete validation pass; the full 230-epoch campaign was not repeated. See [verification](VERIFICATION.md) for the exact scope.
+
+For maintainers: review the source diff and confirm that original evidence has not changed, stage intended files, run `python scripts/update_manifest.py`, then stage the manifest. This records the working files selected by Git; it does not authenticate the scientific claims or replace review.

@@ -1,0 +1,113 @@
+{
+  "format": "cnn-learning-browser-v1",
+  "dtype": "float32-le",
+  "layout": "NCHW; convolution OIHW; linear output-input",
+  "classes": [
+    "T-shirt/top",
+    "Trouser",
+    "Pullover",
+    "Dress",
+    "Coat",
+    "Sandal",
+    "Shirt",
+    "Sneaker",
+    "Bag",
+    "Ankle boot"
+  ],
+  "parameterCount": 57190,
+  "checkpointSha256": "013745dcd66e4d5c462ba64607faed70831ea7e9caa27721afcdc34693b245f2",
+  "weightsFile": "weights.bin",
+  "weightsSha256": "65a41e8b695e925a68be90237113883082cd99b2bd474f39c52156bd6237b7cf",
+  "weightsBytes": 228760,
+  "inputShape": [
+    1,
+    28,
+    28
+  ],
+  "tensors": {
+    "0.weight": {
+      "shape": [
+        16,
+        1,
+        5,
+        5
+      ],
+      "offset": 0,
+      "length": 400
+    },
+    "0.bias": {
+      "shape": [
+        16
+      ],
+      "offset": 400,
+      "length": 16
+    },
+    "3.weight": {
+      "shape": [
+        32,
+        16,
+        5,
+        5
+      ],
+      "offset": 416,
+      "length": 12800
+    },
+    "3.bias": {
+      "shape": [
+        32
+      ],
+      "offset": 13216,
+      "length": 32
+    },
+    "7.weight": {
+      "shape": [
+        84,
+        512
+      ],
+      "offset": 13248,
+      "length": 43008
+    },
+    "7.bias": {
+      "shape": [
+        84
+      ],
+      "offset": 56256,
+      "length": 84
+    },
+    "9.weight": {
+      "shape": [
+        10,
+        84
+      ],
+      "offset": 56340,
+      "length": 840
+    },
+    "9.bias": {
+      "shape": [
+        10
+      ],
+      "offset": 57180,
+      "length": 10
+    }
+  },
+  "architecture": "Conv1(1->16,k5),ReLU,AvgPool2,Conv2(16->32,k5),ReLU,AvgPool2,Flatten512,Linear84,ReLU,Linear10",
+  "training": {
+    "seed": 42,
+    "selectedEpoch": 30,
+    "optimizer": "Adam",
+    "learningRate": 0.001,
+    "augmentation": [
+      "RandomCrop(28,padding=2)",
+      "RandomHorizontalFlip(0.5)"
+    ],
+    "trainSamples": 54000,
+    "validationSamples": 6000
+  },
+  "metrics": {
+    "testAccuracyPct": 91.08,
+    "testMacroF1": 0.9101046288298633,
+    "validationAccuracyPct": 91.23333333333333
+  },
+  "evaluationNote": "The official Fashion-MNIST test was reused after V1; arbitrary uploaded-photo accuracy has not been evaluated.",
+  "preprocessingNote": "Native dataset inference uses grayscale 28x28 float32 values in [0,1]. Uploaded-photo preparation is a separate heuristic."
+}
