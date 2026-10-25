@@ -1,0 +1,24 @@
+{
+  "linear_baseline": {
+    "samples": 6000,
+    "correct": 5131,
+    "errors": 869,
+    "accuracy_pct": 85.51666666666667,
+    "macro_f1": 0.8535260910005679,
+    "zero_division": 0,
+    "loss": 0.4177967177927494,
+    "model_name": "linear_baseline",
+    "split": "validation"
+  },
+  "cnn": {
+    "samples": 6000,
+    "correct": 5320,
+    "errors": 680,
+    "accuracy_pct": 88.66666666666667,
+    "macro_f1": 0.8858789085765585,
+    "zero_division": 0,
+    "loss": 0.3098124504288038,
+    "model_name": "cnn",
+    "split": "validation"
+  }
+}

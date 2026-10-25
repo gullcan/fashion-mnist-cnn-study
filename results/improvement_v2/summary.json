@@ -1,0 +1,197 @@
+{
+  "protocol": {
+    "version": "V2 validation-only improvement study",
+    "seed": 42,
+    "epochs_per_candidate": 30,
+    "split_sha256": "551ae513dfab839035c47ce2832c2570bd193b45ab6e742880b3e1d17c790d19",
+    "dataset": "Fashion-MNIST",
+    "train_samples": 54000,
+    "val_samples": 6000,
+    "batch_size": 64,
+    "optimizer": "Adam",
+    "initial_lr": 0.001,
+    "loss": "CrossEntropyLoss",
+    "cudnn_deterministic": true,
+    "cudnn_benchmark": false,
+    "stages": [
+      {
+        "name": "01_longer",
+        "change": {}
+      },
+      {
+        "name": "02_scheduler",
+        "change": {
+          "scheduler": true
+        }
+      },
+      {
+        "name": "03_max_pool",
+        "change": {
+          "pooling": "max"
+        }
+      },
+      {
+        "name": "04_wider",
+        "change": {
+          "channels": [
+            16,
+            32
+          ]
+        }
+      },
+      {
+        "name": "05_augmentation",
+        "change": {
+          "augmentation": true
+        }
+      }
+    ],
+    "selection": "highest validation accuracy; tie lower validation loss",
+    "design": "greedy: each change is applied to the best preceding candidate",
+    "v1_validation_reference": {
+      "model_name": "cnn",
+      "best_epoch": 10,
+      "val_loss": 0.3098124504288038,
+      "val_accuracy": 88.66666666666667,
+      "parameters": 25010,
+      "training_and_validation_seconds": 73.32134509994648,
+      "checkpoint": "cnn/best.pt"
+    },
+    "test_policy": "V1 test already seen. This script never loads test data. Later benchmark reuse must be disclosed.",
+    "python": "3.14.7",
+    "torch": "2.14.1+cu130",
+    "torchvision": "0.29.1+cu130",
+    "numpy": "2.5.2",
+    "device": "cuda",
+    "gpu": "NVIDIA GeForce RTX 4060"
+  },
+  "results": [
+    {
+      "run_name": "01_longer",
+      "parent_run": "V1 architecture; fresh weights",
+      "candidate_config": {
+        "channels": [
+          6,
+          16
+        ],
+        "pooling": "avg",
+        "scheduler": false,
+        "augmentation": false
+      },
+      "best_epoch": 28,
+      "val_loss": 0.2561703722824653,
+      "val_accuracy": 90.88333333333334,
+      "parameters": 25010,
+      "training_and_validation_seconds": 263.8673526002094,
+      "checkpoint": "01_longer/best.pt"
+    },
+    {
+      "run_name": "02_scheduler",
+      "parent_run": "01_longer",
+      "candidate_config": {
+        "channels": [
+          6,
+          16
+        ],
+        "pooling": "avg",
+        "scheduler": true,
+        "augmentation": false
+      },
+      "best_epoch": 27,
+      "val_loss": 0.2653588698705037,
+      "val_accuracy": 90.65,
+      "parameters": 25010,
+      "training_and_validation_seconds": 266.5572242999915,
+      "checkpoint": "02_scheduler/best.pt"
+    },
+    {
+      "run_name": "03_max_pool",
+      "parent_run": "01_longer",
+      "candidate_config": {
+        "channels": [
+          6,
+          16
+        ],
+        "pooling": "max",
+        "scheduler": false,
+        "augmentation": false
+      },
+      "best_epoch": 30,
+      "val_loss": 0.29332456115819516,
+      "val_accuracy": 90.06666666666666,
+      "parameters": 25010,
+      "training_and_validation_seconds": 263.45476339990273,
+      "checkpoint": "03_max_pool/best.pt"
+    },
+    {
+      "run_name": "04_wider",
+      "parent_run": "01_longer",
+      "candidate_config": {
+        "channels": [
+          16,
+          32
+        ],
+        "pooling": "avg",
+        "scheduler": false,
+        "augmentation": false
+      },
+      "best_epoch": 28,
+      "val_loss": 0.2786537387395899,
+      "val_accuracy": 91.08333333333333,
+      "parameters": 57190,
+      "training_and_validation_seconds": 286.09274929971434,
+      "checkpoint": "04_wider/best.pt"
+    },
+    {
+      "run_name": "05_augmentation",
+      "parent_run": "04_wider",
+      "candidate_config": {
+        "channels": [
+          16,
+          32
+        ],
+        "pooling": "avg",
+        "scheduler": false,
+        "augmentation": true
+      },
+      "best_epoch": 30,
+      "val_loss": 0.24161136528197677,
+      "val_accuracy": 91.23333333333333,
+      "parameters": 57190,
+      "training_and_validation_seconds": 434.78265120019205,
+      "checkpoint": "05_augmentation/best.pt"
+    }
+  ],
+  "winner": {
+    "run_name": "05_augmentation",
+    "parent_run": "04_wider",
+    "candidate_config": {
+      "channels": [
+        16,
+        32
+      ],
+      "pooling": "avg",
+      "scheduler": false,
+      "augmentation": true
+    },
+    "best_epoch": 30,
+    "val_loss": 0.24161136528197677,
+    "val_accuracy": 91.23333333333333,
+    "parameters": 57190,
+    "training_and_validation_seconds": 434.78265120019205,
+    "checkpoint": "05_augmentation/best.pt"
+  },
+  "winner_validation_metrics": {
+    "samples": 6000,
+    "correct": 5474,
+    "errors": 526,
+    "accuracy_pct": 91.23333333333333,
+    "macro_f1": 0.9117333418466966,
+    "zero_division": 0,
+    "loss": 0.24161136528197677,
+    "model_name": "cnn",
+    "split": "validation"
+  },
+  "improved_over_v1_validation": true,
+  "validation_gain_percentage_points": 2.566666666666663
+}

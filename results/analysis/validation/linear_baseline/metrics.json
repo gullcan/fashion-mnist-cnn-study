@@ -1,0 +1,11 @@
+{
+  "samples": 6000,
+  "correct": 5131,
+  "errors": 869,
+  "accuracy_pct": 85.51666666666667,
+  "macro_f1": 0.8535260910005679,
+  "zero_division": 0,
+  "loss": 0.4177967177927494,
+  "model_name": "linear_baseline",
+  "split": "validation"
+}

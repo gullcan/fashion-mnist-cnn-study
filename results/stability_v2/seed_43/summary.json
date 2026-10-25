@@ -1,0 +1,19 @@
+{
+  "run_name": "seed_43",
+  "parent_run": "05_augmentation",
+  "candidate_config": {
+    "channels": [
+      16,
+      32
+    ],
+    "pooling": "avg",
+    "scheduler": false,
+    "augmentation": true
+  },
+  "best_epoch": 30,
+  "val_loss": 0.26812292331208787,
+  "val_accuracy": 89.65,
+  "parameters": 57190,
+  "training_and_validation_seconds": 413.1324938002508,
+  "checkpoint": "seed_43/best.pt"
+}

@@ -1,0 +1,41 @@
+{
+  "validation": {
+    "samples": 6000,
+    "correct": 5474,
+    "errors": 526,
+    "accuracy_pct": 91.23333333333333,
+    "macro_f1": 0.9117333418466966,
+    "zero_division": 0,
+    "loss": 0.24161136528197677,
+    "model_name": "cnn",
+    "split": "validation"
+  },
+  "test": {
+    "samples": 10000,
+    "correct": 9108,
+    "errors": 892,
+    "accuracy_pct": 91.08,
+    "macro_f1": 0.9101046288298633,
+    "zero_division": 0,
+    "loss": 0.24750915126800538,
+    "model_name": "cnn",
+    "split": "test"
+  },
+  "v1_cnn_test": {
+    "samples": 10000,
+    "correct": 8812,
+    "errors": 1188,
+    "accuracy_pct": 88.12,
+    "macro_f1": 0.8807265517483195,
+    "zero_division": 0,
+    "loss": 0.3313167772769928,
+    "model_name": "cnn",
+    "split": "test"
+  },
+  "comparison": {
+    "accuracy_gain_percentage_points": 2.9599999999999937,
+    "fewer_errors": 296,
+    "macro_f1_gain": 0.02937807708154383
+  },
+  "protocol": "frozen_protocol.json"
+}

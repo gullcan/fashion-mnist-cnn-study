@@ -1,0 +1,11 @@
+{
+  "samples": 6000,
+  "correct": 5474,
+  "errors": 526,
+  "accuracy_pct": 91.23333333333333,
+  "macro_f1": 0.9117333418466966,
+  "zero_division": 0,
+  "loss": 0.24161136528197677,
+  "model_name": "cnn",
+  "split": "validation"
+}

@@ -1,0 +1,19 @@
+{
+  "run_name": "03_max_pool",
+  "parent_run": "01_longer",
+  "candidate_config": {
+    "channels": [
+      6,
+      16
+    ],
+    "pooling": "max",
+    "scheduler": false,
+    "augmentation": false
+  },
+  "best_epoch": 30,
+  "val_loss": 0.29332456115819516,
+  "val_accuracy": 90.06666666666666,
+  "parameters": 25010,
+  "training_and_validation_seconds": 263.45476339990273,
+  "checkpoint": "03_max_pool/best.pt"
+}

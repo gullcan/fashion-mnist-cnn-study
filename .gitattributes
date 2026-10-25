@@ -1,0 +1,13 @@
+* text=auto
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.csv text eol=lf
+*.ipynb text eol=lf
+*.pt binary
+*.npz binary
+*.npy binary
+*.png binary
+# Preserve original report bytes: frozen identities contain their SHA256 hashes.
+results/** -text
+

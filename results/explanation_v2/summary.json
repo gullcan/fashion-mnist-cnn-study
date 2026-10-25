@@ -1,0 +1,51 @@
+{
+  "checkpoint_sha256": "013745dcd66e4d5c462ba64607faed70831ea7e9caa27721afcdc34693b245f2",
+  "examples": [
+    {
+      "validation_source_index": 49804,
+      "true_label": 0,
+      "predicted_label": 0,
+      "conv1_channel0_scale": [
+        -0.6840581297874451,
+        0.6840581297874451
+      ]
+    },
+    {
+      "validation_source_index": 35190,
+      "true_label": 6,
+      "predicted_label": 6,
+      "conv1_channel0_scale": [
+        -0.46233150362968445,
+        0.46233150362968445
+      ]
+    },
+    {
+      "validation_source_index": 44778,
+      "true_label": 9,
+      "predicted_label": 9,
+      "conv1_channel0_scale": [
+        -0.9002750515937805,
+        0.9002750515937805
+      ]
+    }
+  ],
+  "error_transitions": {
+    "counts": {
+      "both_correct": 8546,
+      "fixed_by_v2": 562,
+      "broken_by_v2": 266,
+      "both_wrong": 626
+    },
+    "input_sha256": {
+      "v1": "d0a11f3570891566a30ffb78cc792ea2d6ad22a2d954441a56f3c218c5c82662",
+      "v2": "aa1b717ef73ece07ed93e19d43963ea7050b9c1ef959655ab39fda2f49d1f83f"
+    }
+  },
+  "filter_plot_scale": [
+    -3.0613577365875244,
+    3.0613577365875244
+  ],
+  "initialization_note": "Reconstructed from seed and identical factory/version, not captured during V2 training.",
+  "interpretation": "Feature maps are responses, not proof of the reason for a prediction. Channel0 is illustrative, not selected as most important.",
+  "sample_rule": "First saved validation index in each of classes 0,6,9; not selected by correctness."
+}

@@ -1,0 +1,131 @@
+{
+  "seed": 42,
+  "random_errors": [
+    {
+      "dataset_index": 28709,
+      "true_label": 0,
+      "predicted_label": 6,
+      "softmax_score": 0.7697499394416809
+    },
+    {
+      "dataset_index": 18208,
+      "true_label": 6,
+      "predicted_label": 0,
+      "softmax_score": 0.9916227459907532
+    },
+    {
+      "dataset_index": 59248,
+      "true_label": 0,
+      "predicted_label": 4,
+      "softmax_score": 0.48765113949775696
+    },
+    {
+      "dataset_index": 11472,
+      "true_label": 6,
+      "predicted_label": 0,
+      "softmax_score": 0.49960389733314514
+    },
+    {
+      "dataset_index": 26903,
+      "true_label": 4,
+      "predicted_label": 2,
+      "softmax_score": 0.43307602405548096
+    },
+    {
+      "dataset_index": 56234,
+      "true_label": 4,
+      "predicted_label": 3,
+      "softmax_score": 0.6846820116043091
+    },
+    {
+      "dataset_index": 31004,
+      "true_label": 6,
+      "predicted_label": 4,
+      "softmax_score": 0.5941534042358398
+    },
+    {
+      "dataset_index": 35214,
+      "true_label": 0,
+      "predicted_label": 6,
+      "softmax_score": 0.5846084356307983
+    },
+    {
+      "dataset_index": 1389,
+      "true_label": 2,
+      "predicted_label": 6,
+      "softmax_score": 0.5249710083007812
+    },
+    {
+      "dataset_index": 40810,
+      "true_label": 6,
+      "predicted_label": 0,
+      "softmax_score": 0.9936766028404236
+    }
+  ],
+  "high_score_errors": [
+    {
+      "dataset_index": 45592,
+      "true_label": 6,
+      "predicted_label": 3,
+      "softmax_score": 0.9996887445449829
+    },
+    {
+      "dataset_index": 40628,
+      "true_label": 5,
+      "predicted_label": 9,
+      "softmax_score": 0.9985904097557068
+    },
+    {
+      "dataset_index": 36623,
+      "true_label": 4,
+      "predicted_label": 2,
+      "softmax_score": 0.9983838796615601
+    },
+    {
+      "dataset_index": 2869,
+      "true_label": 7,
+      "predicted_label": 9,
+      "softmax_score": 0.9976264834403992
+    },
+    {
+      "dataset_index": 44798,
+      "true_label": 6,
+      "predicted_label": 2,
+      "softmax_score": 0.9965648055076599
+    },
+    {
+      "dataset_index": 35997,
+      "true_label": 2,
+      "predicted_label": 4,
+      "softmax_score": 0.9945631623268127
+    },
+    {
+      "dataset_index": 56303,
+      "true_label": 2,
+      "predicted_label": 0,
+      "softmax_score": 0.993970513343811
+    },
+    {
+      "dataset_index": 40810,
+      "true_label": 6,
+      "predicted_label": 0,
+      "softmax_score": 0.9936766028404236
+    },
+    {
+      "dataset_index": 21015,
+      "true_label": 4,
+      "predicted_label": 2,
+      "softmax_score": 0.99355548620224
+    },
+    {
+      "dataset_index": 19928,
+      "true_label": 5,
+      "predicted_label": 9,
+      "softmax_score": 0.9935158491134644
+    }
+  ],
+  "overlapping_dataset_indices": [
+    40810
+  ],
+  "score_note": "Maximum softmax score is not a calibrated correctness guarantee."
+}

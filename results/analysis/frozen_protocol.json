@@ -1,0 +1,50 @@
+{
+  "frozen_at_utc": "2026-10-24T18:53:08.727848+00:00",
+  "identity": {
+    "checkpoints": {
+      "linear_baseline": {
+        "sha256": "89676f2695defd4311d9609b23ce312fc5a73cb22f9bb95206e8bb571bf30207",
+        "epoch": 10
+      },
+      "cnn": {
+        "sha256": "f969d3c0803c4a2dceed1739e781f5370445ffff11a734bf9e712b26c1c36fa6",
+        "epoch": 10
+      }
+    },
+    "split_sha256": "551ae513dfab839035c47ce2832c2570bd193b45ab6e742880b3e1d17c790d19"
+  },
+  "training_config": {
+    "dataset": "Fashion-MNIST",
+    "train_samples": 54000,
+    "val_samples": 6000,
+    "seed": 42,
+    "epochs": 10,
+    "batch_size": 64,
+    "lr": 0.001,
+    "optimizer": "Adam",
+    "loss": "CrossEntropyLoss",
+    "num_workers": 0,
+    "selection": "minimum validation loss; earlier epoch wins a tie",
+    "epoch_seconds_includes": "training and validation; excludes saving and plotting",
+    "split_sha256": "551ae513dfab839035c47ce2832c2570bd193b45ab6e742880b3e1d17c790d19",
+    "python": "3.14.7",
+    "torch": "2.14.1+cu130",
+    "torchvision": "0.29.1+cu130",
+    "numpy": "2.5.2",
+    "matplotlib": "3.11.2",
+    "cuda_runtime": "13.0",
+    "device": "cuda",
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "cudnn_deterministic": true,
+    "cudnn_benchmark": false
+  },
+  "test_samples": 10000,
+  "metrics": [
+    "accuracy_pct",
+    "macro_f1",
+    "per_class_precision_recall_f1_support"
+  ],
+  "metric_definition": "Rows=true, columns=predicted; all 10 labels; zero_division=0.",
+  "preprocessing": "ToTensor: grayscale 1x28x28, float32, pixels / 255.",
+  "test_policy": "Frozen checkpoints only; no model fitting or tuning from test results."
+}

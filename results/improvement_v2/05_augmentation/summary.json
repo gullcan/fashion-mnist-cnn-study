@@ -1,0 +1,19 @@
+{
+  "run_name": "05_augmentation",
+  "parent_run": "04_wider",
+  "candidate_config": {
+    "channels": [
+      16,
+      32
+    ],
+    "pooling": "avg",
+    "scheduler": false,
+    "augmentation": true
+  },
+  "best_epoch": 30,
+  "val_loss": 0.24161136528197677,
+  "val_accuracy": 91.23333333333333,
+  "parameters": 57190,
+  "training_and_validation_seconds": 434.78265120019205,
+  "checkpoint": "05_augmentation/best.pt"
+}

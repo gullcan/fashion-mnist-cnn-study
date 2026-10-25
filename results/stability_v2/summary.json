@@ -1,0 +1,53 @@
+{
+  "protocol": {
+    "source_run": "05_augmentation",
+    "candidate_config": {
+      "channels": [
+        16,
+        32
+      ],
+      "pooling": "avg",
+      "scheduler": false,
+      "augmentation": true
+    },
+    "epochs": 30,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "split_sha256": "551ae513dfab839035c47ce2832c2570bd193b45ab6e742880b3e1d17c790d19",
+    "fixed_deployment_checkpoint": "C:\\Users\\MSI\\Documents\\Codex\\cnn-learning\\results\\improvement_v2\\05_augmentation\\best.pt",
+    "fixed_checkpoint_sha256": "013745dcd66e4d5c462ba64607faed70831ea7e9caa27721afcdc34693b245f2",
+    "selection": "Same V2 rule within each run. Never select a seed by its score.",
+    "test_policy": "Validation only; no official test dataset is loaded.",
+    "interpretation": "Descriptive variation on one fixed split; three runs are not a confidence interval."
+  },
+  "runs": [
+    {
+      "seed": 42,
+      "best_epoch": 30,
+      "val_accuracy": 91.23333333333333,
+      "val_loss": 0.24161136528197677,
+      "origin": "existing V2 selected checkpoint"
+    },
+    {
+      "seed": 43,
+      "best_epoch": 30,
+      "val_accuracy": 89.65,
+      "val_loss": 0.26812292331208787,
+      "origin": "seed_43"
+    },
+    {
+      "seed": 44,
+      "best_epoch": 29,
+      "val_accuracy": 89.93333333333334,
+      "val_loss": 0.26520599764461317,
+      "origin": "seed_44"
+    }
+  ],
+  "mean_val_accuracy_pct": 90.27222222222223,
+  "sample_std_percentage_points": 0.8443165107768333,
+  "min_val_accuracy_pct": 89.65,
+  "max_val_accuracy_pct": 91.23333333333333
+}

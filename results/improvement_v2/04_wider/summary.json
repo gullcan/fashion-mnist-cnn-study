@@ -1,0 +1,19 @@
+{
+  "run_name": "04_wider",
+  "parent_run": "01_longer",
+  "candidate_config": {
+    "channels": [
+      16,
+      32
+    ],
+    "pooling": "avg",
+    "scheduler": false,
+    "augmentation": false
+  },
+  "best_epoch": 28,
+  "val_loss": 0.2786537387395899,
+  "val_accuracy": 91.08333333333333,
+  "parameters": 57190,
+  "training_and_validation_seconds": 286.09274929971434,
+  "checkpoint": "04_wider/best.pt"
+}

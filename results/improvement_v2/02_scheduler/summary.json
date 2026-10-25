@@ -1,0 +1,19 @@
+{
+  "run_name": "02_scheduler",
+  "parent_run": "01_longer",
+  "candidate_config": {
+    "channels": [
+      6,
+      16
+    ],
+    "pooling": "avg",
+    "scheduler": true,
+    "augmentation": false
+  },
+  "best_epoch": 27,
+  "val_loss": 0.2653588698705037,
+  "val_accuracy": 90.65,
+  "parameters": 25010,
+  "training_and_validation_seconds": 266.5572242999915,
+  "checkpoint": "02_scheduler/best.pt"
+}

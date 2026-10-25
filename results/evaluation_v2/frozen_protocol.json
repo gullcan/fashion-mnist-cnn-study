@@ -1,0 +1,43 @@
+{
+  "frozen_at_utc": "2026-10-25T08:00:40.839486+00:00",
+  "identity": {
+    "checkpoint_sha256": "013745dcd66e4d5c462ba64607faed70831ea7e9caa27721afcdc34693b245f2",
+    "split_sha256": "551ae513dfab839035c47ce2832c2570bd193b45ab6e742880b3e1d17c790d19",
+    "v1_test_summary_sha256": "e84bdb47ace1de52d5cc04e4fab54588afffc2d9a35bde1aa643434c591d130b",
+    "candidate_config": {
+      "channels": [
+        16,
+        32
+      ],
+      "pooling": "avg",
+      "scheduler": false,
+      "augmentation": true
+    },
+    "seed": 42,
+    "epoch": 30
+  },
+  "test_samples": 10000,
+  "classes": [
+    "T-shirt/top",
+    "Trouser",
+    "Pullover",
+    "Dress",
+    "Coat",
+    "Sandal",
+    "Shirt",
+    "Sneaker",
+    "Bag",
+    "Ankle boot"
+  ],
+  "preprocessing": "ToTensor only: grayscale 1x28x28, float32, pixels / 255.",
+  "metrics": "Accuracy, macro-F1 and all ten per-class precision/recall/F1; zero_division=0.",
+  "test_policy": "Official benchmark reused after V1. No fitting, selection or tuning from this evaluation.",
+  "seed_policy": "Seed42 was fixed before stability results; other seeds are not test candidates.",
+  "selection_caveat": "V2 settings were selected on seed42 validation. Stability mean is descriptive, not an unbiased estimate or confidence interval.",
+  "stability": {
+    "mean_val_accuracy_pct": 90.27222222222223,
+    "sample_std_percentage_points": 0.8443165107768333
+  },
+  "torch": "2.14.1+cu130",
+  "device": "cuda"
+}

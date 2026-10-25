@@ -1,0 +1,19 @@
+{
+  "run_name": "01_longer",
+  "parent_run": "V1 architecture; fresh weights",
+  "candidate_config": {
+    "channels": [
+      6,
+      16
+    ],
+    "pooling": "avg",
+    "scheduler": false,
+    "augmentation": false
+  },
+  "best_epoch": 28,
+  "val_loss": 0.2561703722824653,
+  "val_accuracy": 90.88333333333334,
+  "parameters": 25010,
+  "training_and_validation_seconds": 263.8673526002094,
+  "checkpoint": "01_longer/best.pt"
+}

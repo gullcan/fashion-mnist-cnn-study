@@ -1,0 +1,54 @@
+true_class,predicted_class,count
+Shirt,T-shirt/top,151
+Pullover,Coat,128
+Shirt,Coat,91
+Pullover,Shirt,87
+T-shirt/top,Shirt,86
+Coat,Shirt,76
+Shirt,Pullover,69
+Dress,Coat,48
+Ankle boot,Sneaker,41
+Coat,Pullover,35
+Dress,Shirt,33
+Sneaker,Sandal,29
+Dress,Trouser,26
+Sneaker,Ankle boot,26
+Dress,T-shirt/top,20
+T-shirt/top,Dress,18
+Pullover,T-shirt/top,17
+Coat,Dress,17
+Shirt,Dress,17
+Sandal,Sneaker,16
+T-shirt/top,Pullover,15
+Dress,Pullover,14
+Shirt,Bag,14
+Trouser,Dress,12
+Sandal,Ankle boot,10
+T-shirt/top,Coat,8
+T-shirt/top,Bag,8
+Pullover,Dress,8
+Ankle boot,Sandal,7
+Shirt,Trouser,6
+Bag,Coat,5
+Bag,Shirt,5
+T-shirt/top,Trouser,4
+Trouser,Shirt,4
+Dress,Bag,4
+Bag,Pullover,4
+Trouser,Coat,3
+Coat,Trouser,3
+Bag,Dress,3
+Trouser,T-shirt/top,2
+Trouser,Bag,2
+Coat,Bag,2
+Sandal,Bag,2
+Sneaker,Bag,2
+Bag,Sneaker,2
+T-shirt/top,Sandal,1
+Pullover,Trouser,1
+Pullover,Bag,1
+Coat,T-shirt/top,1
+Sandal,Dress,1
+Bag,T-shirt/top,1
+Bag,Trouser,1
+Bag,Sandal,1

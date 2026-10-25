@@ -1,0 +1,24 @@
+{
+  "linear_baseline": {
+    "samples": 10000,
+    "correct": 8455,
+    "errors": 1545,
+    "accuracy_pct": 84.55,
+    "macro_f1": 0.8436553406694252,
+    "zero_division": 0,
+    "loss": 0.44508813209533693,
+    "model_name": "linear_baseline",
+    "split": "test"
+  },
+  "cnn": {
+    "samples": 10000,
+    "correct": 8812,
+    "errors": 1188,
+    "accuracy_pct": 88.12,
+    "macro_f1": 0.8807265517483195,
+    "zero_division": 0,
+    "loss": 0.3313167772769928,
+    "model_name": "cnn",
+    "split": "test"
+  }
+}

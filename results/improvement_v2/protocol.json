@@ -1,0 +1,66 @@
+{
+  "version": "V2 validation-only improvement study",
+  "seed": 42,
+  "epochs_per_candidate": 30,
+  "split_sha256": "551ae513dfab839035c47ce2832c2570bd193b45ab6e742880b3e1d17c790d19",
+  "dataset": "Fashion-MNIST",
+  "train_samples": 54000,
+  "val_samples": 6000,
+  "batch_size": 64,
+  "optimizer": "Adam",
+  "initial_lr": 0.001,
+  "loss": "CrossEntropyLoss",
+  "cudnn_deterministic": true,
+  "cudnn_benchmark": false,
+  "stages": [
+    {
+      "name": "01_longer",
+      "change": {}
+    },
+    {
+      "name": "02_scheduler",
+      "change": {
+        "scheduler": true
+      }
+    },
+    {
+      "name": "03_max_pool",
+      "change": {
+        "pooling": "max"
+      }
+    },
+    {
+      "name": "04_wider",
+      "change": {
+        "channels": [
+          16,
+          32
+        ]
+      }
+    },
+    {
+      "name": "05_augmentation",
+      "change": {
+        "augmentation": true
+      }
+    }
+  ],
+  "selection": "highest validation accuracy; tie lower validation loss",
+  "design": "greedy: each change is applied to the best preceding candidate",
+  "v1_validation_reference": {
+    "model_name": "cnn",
+    "best_epoch": 10,
+    "val_loss": 0.3098124504288038,
+    "val_accuracy": 88.66666666666667,
+    "parameters": 25010,
+    "training_and_validation_seconds": 73.32134509994648,
+    "checkpoint": "cnn/best.pt"
+  },
+  "test_policy": "V1 test already seen. This script never loads test data. Later benchmark reuse must be disclosed.",
+  "python": "3.14.7",
+  "torch": "2.14.1+cu130",
+  "torchvision": "0.29.1+cu130",
+  "numpy": "2.5.2",
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 4060"
+}

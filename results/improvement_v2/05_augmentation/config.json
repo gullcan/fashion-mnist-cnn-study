@@ -1,0 +1,21 @@
+{
+  "name": "05_augmentation",
+  "parent_run": "04_wider",
+  "candidate_config": {
+    "channels": [
+      16,
+      32
+    ],
+    "pooling": "avg",
+    "scheduler": false,
+    "augmentation": true
+  },
+  "seed": 42,
+  "epochs": 30,
+  "batch_size": 64,
+  "initial_lr": 0.001,
+  "scheduler": null,
+  "augmentation": "pad2/random crop28/horizontal flip0.5",
+  "selection": "max validation accuracy; tie: lower loss; exact tie: earlier",
+  "parameters": 57190
+}

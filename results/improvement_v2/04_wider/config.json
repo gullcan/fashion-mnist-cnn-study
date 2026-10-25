@@ -1,0 +1,21 @@
+{
+  "name": "04_wider",
+  "parent_run": "01_longer",
+  "candidate_config": {
+    "channels": [
+      16,
+      32
+    ],
+    "pooling": "avg",
+    "scheduler": false,
+    "augmentation": false
+  },
+  "seed": 42,
+  "epochs": 30,
+  "batch_size": 64,
+  "initial_lr": 0.001,
+  "scheduler": null,
+  "augmentation": null,
+  "selection": "max validation accuracy; tie: lower loss; exact tie: earlier",
+  "parameters": 57190
+}
