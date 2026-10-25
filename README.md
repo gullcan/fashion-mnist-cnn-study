@@ -1,5 +1,7 @@
 # Fashion-MNIST CNN study
 
+[![Checks](https://github.com/gullcan/fashion-mnist-cnn-study/actions/workflows/checks.yml/badge.svg)](https://github.com/gullcan/fashion-mnist-cnn-study/actions/workflows/checks.yml)
+
 A small, LeNet-inspired study of how image classification works: pixels, learned filters, training, evaluation and mistakes. A linear baseline and two compact CNNs share a recorded 54,000/6,000 training/validation split.
 
 **Selected CNN: 91.08% test accuracy, 0.9101 macro-F1, 57,190 parameters.** The official test set was reused after V1; this is not a new blind evaluation. This is an adaptation of LeNet ideas, not an exact LeNet-5 reproduction.
